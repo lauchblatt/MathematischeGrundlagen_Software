@@ -19,8 +19,6 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.JTree;
-import javax.swing.event.TreeModelEvent;
-import javax.swing.event.TreeModelListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.MutableTreeNode;
@@ -80,14 +78,44 @@ public class PrologInterface implements ActionListener {
 
 	public void start(int xAxis, int yAxis, Point loc) {
 		this.xAxis = xAxis;
-		this.yAxis = yAxis;
-
+		this.yAxis = yAxis;	
+		Dimension d = getDimension();
+		window.setMinimumSize(d);
+		window.setMaximumSize(d);
 		window.setLocation(loc);
 		initComponents();
 		initEventListeners();
 		initTreeListener();
 		window.setVisible(true);
 
+	}
+
+	private Dimension getDimension() {
+		int height = 100;
+		switch(yAxis){
+		case 1: height = 300;
+				break;
+		case 2: height = 350;
+				break;
+		case 3: height = 400;
+				break;
+		case 4: height = 450;
+				break;
+		case 5: height = 500;
+				break;
+		case 6: height = 550;
+				break;
+		case 7: height = 600;
+				break;
+		case 8: height = 650;
+				break;
+		case 9: height = 700;
+				break;
+		case 10: height = 750;
+				break;
+		}
+				
+		return new Dimension(WINDOW_WIDTH, height);
 	}
 
 	private void initTreeListener() {
@@ -135,6 +163,7 @@ public class PrologInterface implements ActionListener {
 	private void initComponents() {
 		window.add(mapPanel());
 		window.add(rulePanel());
+		
 	}
 
 	private JPanel rulePanel() {
