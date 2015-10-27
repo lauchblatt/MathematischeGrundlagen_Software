@@ -73,6 +73,7 @@ public class PrologInterface implements ActionListener {
 	private String freeString;
 	private String blockedString;
 	private String thymioString = "";
+	private String goalString = "";
 	
 	private ActionListener ae;
 
@@ -151,7 +152,7 @@ public class PrologInterface implements ActionListener {
 		}
 		
 		
-		facts.setText(fieldsString + positionsString + freeString + blockedString + thymioString);
+		facts.setText(fieldsString + positionsString + freeString + blockedString + thymioString + goalString);
 	}
 
 	private Dimension getDimension() {
@@ -406,6 +407,9 @@ public class PrologInterface implements ActionListener {
 				}
 			}
 		}
+		
+		thymioString = "";
+		goalString = "";
 		updateFacts();
 	}
 
@@ -457,6 +461,8 @@ public class PrologInterface implements ActionListener {
 						goalOnField = true;
 						gb.setToolTipText(type);
 						gb.setIcon(new ImageIcon(type));
+						generateGoalFact(1, row, col);
+						updateFacts();
 					} else if (type.equals("resources/obstacle.png")) {
 						freeMap[row][col] *= -1;
 						updateFacts();
@@ -473,6 +479,8 @@ public class PrologInterface implements ActionListener {
 					} else if (type.equals("resources/finish.png")) {
 						gb.setIcon(null);
 						goalOnField = false;
+						generateGoalFact(0, row, col);
+						updateFacts();
 					} else if (type.equals("resources/obstacle.png")) {
 						freeMap[row][col] *= -1;
 						updateFacts();
@@ -484,6 +492,16 @@ public class PrologInterface implements ActionListener {
 		});
 		return b;
 	}
+
+	protected void generateGoalFact(int i, int row, int col) {
+		if(i == 1){
+			goalString = "Goal(z)." + "\n" + "pos(z,(" + row + "," + col +")).\n";
+		}else{
+			goalString = "";
+		}
+	}
+	
+	
 
 	protected void generateThymioFact(int i, int row, int col) {
 		if(i == 1){
