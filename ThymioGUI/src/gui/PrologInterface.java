@@ -12,13 +12,17 @@ import java.util.ArrayList;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.JTextPane;
 import javax.swing.JTree;
+import javax.swing.border.Border;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.MutableTreeNode;
@@ -41,21 +45,27 @@ public class PrologInterface implements ActionListener {
 	private JRadioButton finishRadio;
 	private JButton clearButton;
 
-	private String type = "T";
+	private String type = "resources/thymio.png";
 
 	private JTextField input;
 	private JButton addRule;
 
+	private JTextPane facts;
+
 	private int xAxis;
 	private int yAxis;
+
+	private boolean thymioOnField = false;
+	private boolean goalOnField = false;
 
 	private JTree ruleTree;
 	private DefaultMutableTreeNode tree;
 	private DefaultTreeModel model;
 
-	private ArrayList<JButton> buttons = new ArrayList<JButton>();
+	private JButton[][] buttons;
 
 	private ActionListener ae;
+
 	private JButton removeRule;
 
 	public PrologInterface() {
@@ -69,75 +79,112 @@ public class PrologInterface implements ActionListener {
 
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		windowPanel = new JPanel();
-		windowPanel.setMaximumSize(WINDOW_DIMENSION);
-		windowPanel.setMinimumSize(WINDOW_DIMENSION);
 		windowPanel.setLayout(new BoxLayout(windowPanel, BoxLayout.X_AXIS));
-		window.setContentPane(windowPanel);
 		window.setVisible(false);
 	}
 
 	public void start(int xAxis, int yAxis, Point loc) {
 		this.xAxis = xAxis;
-		this.yAxis = yAxis;	
+		this.yAxis = yAxis;
+		System.out.println(this.xAxis + " \t" + this.yAxis);
+		System.out.println(xAxis + " \t" + yAxis);
+
+		buttons = new JButton[xAxis][yAxis];
+
 		Dimension d = getDimension();
+		windowPanel.setMinimumSize(d);
 		window.setMinimumSize(d);
+		windowPanel.setMaximumSize(d);
 		window.setMaximumSize(d);
+		window.setContentPane(windowPanel);
 		window.setLocation(loc);
 		initComponents();
+		initFacts();
 		initEventListeners();
 		initTreeListener();
 		window.setVisible(true);
 
 	}
 
+	private void initFacts() {
+		String fields = "";
+		String free = "";
+		String positions = "";
+		for (int i = 0; i < xAxis * yAxis; i++) {
+			fields += "field(f" + (i + 1) + ").\n";
+			free += "free(f" + (i + 1) + ").\n";
+		}
+
+		int count = 1;
+		for (int i = 0; i < yAxis; i++) {
+			for (int k = 0; k < xAxis; k++) {
+				positions += "pos(f" + count + ",(" + i + "," + k + ").\n";
+				count++;
+
+			}
+		}
+
+		facts.setText(fields + free + positions);
+	}
+
 	private Dimension getDimension() {
 		int height = 100;
-		switch(yAxis){
-		case 1: height = 300;
-				break;
-		case 2: height = 350;
-				break;
-		case 3: height = 400;
-				break;
-		case 4: height = 450;
-				break;
-		case 5: height = 500;
-				break;
-		case 6: height = 550;
-				break;
-		case 7: height = 600;
-				break;
-		case 8: height = 650;
-				break;
-		case 9: height = 700;
-				break;
-		case 10: height = 750;
-				break;
+		switch (xAxis) {
+		case 1:
+			height = 300;
+			break;
+		case 2:
+			height = 350;
+			break;
+		case 3:
+			height = 400;
+			break;
+		case 4:
+			height = 450;
+			break;
+		case 5:
+			height = 500;
+			break;
+		case 6:
+			height = 550;
+			break;
+		case 7:
+			height = 600;
+			break;
+		case 8:
+			height = 650;
+			break;
+		case 9:
+			height = 700;
+			break;
+		case 10:
+			height = 750;
+			break;
 		}
-				
 		return new Dimension(WINDOW_WIDTH, height);
 	}
 
 	private void initTreeListener() {
 
 		removeRule.addActionListener(new ActionListener() {
-			
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				TreePath path = ruleTree.getSelectionPath();
-				if (path!=null)
-				{
+				if (path != null) {
 
-				MutableTreeNode node =(MutableTreeNode) path.getLastPathComponent();
+					MutableTreeNode node = (MutableTreeNode) path
+							.getLastPathComponent();
 
-				System.out.println("Trying to remove : "+node.toString());
+					System.out.println("Trying to remove : " + node.toString());
 
-				MutableTreeNode parent=(MutableTreeNode)node.getParent();
-				int index=parent.getIndex(node);
-				parent.remove(node);
+					MutableTreeNode parent = (MutableTreeNode) node.getParent();
+					int index = parent.getIndex(node);
+					parent.remove(node);
 
-				DefaultTreeModel model=(DefaultTreeModel)ruleTree.getModel();
-				model.nodesWereRemoved(parent,new int[]{index},null);
+					DefaultTreeModel model = (DefaultTreeModel) ruleTree
+							.getModel();
+					model.nodesWereRemoved(parent, new int[] { index }, null);
 
 				}
 			}
@@ -163,7 +210,7 @@ public class PrologInterface implements ActionListener {
 	private void initComponents() {
 		window.add(mapPanel());
 		window.add(rulePanel());
-		
+
 	}
 
 	private JPanel rulePanel() {
@@ -175,27 +222,49 @@ public class PrologInterface implements ActionListener {
 	}
 
 	private JPanel ruleInfo() {
+		JPanel infoPanel = new JPanel();
+		infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.X_AXIS));
+		infoPanel.setSize(550, 600);
+
+		facts = new JTextPane();
+		facts.setMaximumSize(new Dimension(100, 100));
+		facts.setEditable(false);
+		facts.setText("Test");
+
+		JScrollPane factsScroll = new JScrollPane(facts);
+		factsScroll.setMaximumSize(new Dimension(250, 150));
+		factsScroll.setBounds(0, 0, 50, 100);
+		factsScroll.setVisible(true);
+		factsScroll.setBorder(BorderFactory.createTitledBorder("Facts"));
+
 		JPanel ruleInfoPanel = new JPanel();
 		ruleInfoPanel.setLayout(new BoxLayout(ruleInfoPanel, BoxLayout.Y_AXIS));
-		ruleInfoPanel.setSize(550, 600);
+		ruleInfoPanel.setSize(50, 100);
 
-
-		tree = new DefaultMutableTreeNode(
-				"Defined Rules:");
-		
+		tree = new DefaultMutableTreeNode("Defined Rules:");
 		tree.setAllowsChildren(true);
 		ruleTree = new JTree(tree);
-		ruleTree.setMinimumSize(new Dimension(500, 400));
-		ruleInfoPanel.setBorder(BorderFactory.createEmptyBorder(30,0,0,0));
+		ruleTree.setMinimumSize(new Dimension(50, 100));
+		ruleTree.setMaximumSize(new Dimension(50, 100));
+		ruleTree.setScrollsOnExpand(true);
+		ruleInfoPanel.setBorder(BorderFactory.createEmptyBorder(30, 0, 0, 0));
 		ruleInfoPanel.add(ruleTree);
-		ruleTree.setVisible(false);
 		model = (DefaultTreeModel) ruleTree.getModel();
-		
+
+		JScrollPane strukturpane = new JScrollPane(ruleTree);
+		strukturpane.setMaximumSize(new Dimension(250, 150));
+		strukturpane.setBounds(0, 0, 50, 100);
+		strukturpane.setVisible(true);
+		ruleInfoPanel.add(strukturpane);
+		strukturpane.setBorder(BorderFactory.createTitledBorder("Rules"));
+
 		removeRule = new JButton("Remove selected Rule");
 		removeRule.setAlignmentX(Component.CENTER_ALIGNMENT);
-		removeRule.setVisible(false);
 		ruleInfoPanel.add(removeRule);
-		return ruleInfoPanel;
+
+		infoPanel.add(factsScroll);
+		infoPanel.add(ruleInfoPanel);
+		return infoPanel;
 	}
 
 	private JPanel ruleInput() {
@@ -217,11 +286,12 @@ public class PrologInterface implements ActionListener {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == addRule) {
-					ruleTree.setVisible(true);
-					removeRule.setVisible(true);
 					if (!input.getText().equals("")) {
-						DefaultMutableTreeNode root = (DefaultMutableTreeNode) model.getRoot();
-						model.insertNodeInto(new DefaultMutableTreeNode(input.getText()), root, root.getChildCount());
+						DefaultMutableTreeNode root = (DefaultMutableTreeNode) model
+								.getRoot();
+						model.insertNodeInto(
+								new DefaultMutableTreeNode(input.getText()),
+								root, root.getChildCount());
 						model.reload(root);
 						input.setText("");
 					}
@@ -282,11 +352,17 @@ public class PrologInterface implements ActionListener {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == clearButton) {
-					for (int i = 0; i < buttons.size(); i++) {
-						buttons.get(i).setText("");
+					for (int i = 0; i < buttons.length; i++) {
+						for (int k = 0; k < buttons[i].length; k++) {
+							buttons[i][k].setIcon(null);
+							buttons[i][k].setToolTipText("");
+						}
 					}
+					thymioOnField = false;
+					goalOnField = false;
 				}
 			}
+
 		});
 
 		controlPanel.add(clearButton);
@@ -296,58 +372,90 @@ public class PrologInterface implements ActionListener {
 
 	private JPanel map() {
 
-		mapPanel = new JPanel(new GridLayout(yAxis, xAxis));
-
-		for (int i = 0; i < yAxis; i++) {
-			for (int k = 0; k < xAxis; k++) {
+		mapPanel = new JPanel(new GridLayout(xAxis, yAxis));
+		for (int i = 0; i < xAxis; i++) {
+			for (int k = 0; k < yAxis; k++) {
 				int row = i;
 				int col = k;
 
-				if (i > 0) {
-					col = k + xAxis * i - i;
-				}
+				// if (i > 0) {
+				// col = k + xAxis * i - i;
+				// }
 				JButton field = createGridButton(row, col);
-				buttons.add(field);
+				field.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1,
+						Color.BLACK));
+				
+				buttons[i][k] = (field);
 				mapPanel.add(field);
 			}
 		}
 
-		mapPanel.setMaximumSize(new Dimension(xAxis * 50 + 50, yAxis * 50 + 50));
+		mapPanel.setMaximumSize(new Dimension(yAxis * 50 + 52, xAxis * 50 + 52));
+		mapPanel.setMinimumSize(new Dimension(yAxis * 50 + 52, xAxis * 50 + 52));
+
 		mapPanel.setBorder(BorderFactory.createEmptyBorder(50, 0, 0, 0));
 		return mapPanel;
 	}
 
 	private JButton createGridButton(final int row, final int col) {
 		final JButton b = new JButton();
-
 		b.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				JButton gb = PrologInterface.this.getGridButton(row, col);
 
-				if (gb.getText().equals(type)) {
-					gb.setText("");
-				} else {
-					if (gb.getText().equals("")) {
-						gb.setText(type);
+				if (gb.getIcon() == null) {
+					if (!thymioOnField && type.equals("resources/thymio.png")) {
+						thymioOnField = true;
+						gb.setToolTipText(type);
+						gb.setIcon(new ImageIcon(type));
+					} else if (!goalOnField
+							&& type.equals("resources/finish.png")) {
+						goalOnField = true;
+						gb.setToolTipText(type);
+						gb.setIcon(new ImageIcon(type));
+					} else if (type.equals("resources/obstacle.png")) {
+						System.out.println(row + "," + (col));
+						gb.setToolTipText(type);
+						gb.setIcon(new ImageIcon(type));
+					}
+				} else if (gb.getToolTipText().equals(type)) {
+					if (type.equals("resources/thymio.png")) {
+						gb.setIcon(null);
+						thymioOnField = false;
+					} else if (type.equals("resources/finish.png")) {
+						gb.setIcon(null);
+						goalOnField = false;
+					} else if (type.equals("resources/obstacle.png")) {
+						gb.setIcon(null);
 					}
 				}
 			}
+
 		});
 		return b;
 	}
 
 	protected JButton getGridButton(int row, int col) {
-		int index = row + col;
-		return buttons.get(index);
+		return buttons[row][col];
 
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 
-		type = e.getActionCommand();
+		switch (e.getActionCommand()) {
+		case "T":
+			type = "resources/thymio.png";
+			break;
+		case "O":
+			type = "resources/obstacle.png";
+			break;
+		case "Z":
+			type = "resources/finish.png";
+			break;
+		}
 
 	}
 }
