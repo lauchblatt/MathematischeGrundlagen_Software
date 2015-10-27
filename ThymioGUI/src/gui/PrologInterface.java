@@ -7,7 +7,9 @@ import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -63,7 +65,14 @@ public class PrologInterface implements ActionListener {
 	private DefaultTreeModel model;
 
 	private JButton[][] buttons;
+	private int[][] freeMap;
 
+
+	private String positionsString;
+	private String fieldsString;
+	private String freeString;
+	private String blockedString;
+	
 	private ActionListener ae;
 
 	private JButton removeRule;
@@ -86,11 +95,10 @@ public class PrologInterface implements ActionListener {
 	public void start(int xAxis, int yAxis, Point loc) {
 		this.xAxis = xAxis;
 		this.yAxis = yAxis;
-		System.out.println(this.xAxis + " \t" + this.yAxis);
-		System.out.println(xAxis + " \t" + yAxis);
 
 		buttons = new JButton[xAxis][yAxis];
-
+		freeMap = new int[xAxis][yAxis];
+		
 		Dimension d = getDimension();
 		windowPanel.setMinimumSize(d);
 		window.setMinimumSize(d);
@@ -107,24 +115,39 @@ public class PrologInterface implements ActionListener {
 	}
 
 	private void initFacts() {
-		String fields = "";
-		String free = "";
-		String positions = "";
+		fieldsString = "";
+		positionsString = "";
 		for (int i = 0; i < xAxis * yAxis; i++) {
-			fields += "field(f" + (i + 1) + ").\n";
-			free += "free(f" + (i + 1) + ").\n";
+			fieldsString += "field(f" + (i + 1) + ").\n";
 		}
 
 		int count = 1;
-		for (int i = 0; i < yAxis; i++) {
-			for (int k = 0; k < xAxis; k++) {
-				positions += "pos(f" + count + ",(" + i + "," + k + ").\n";
+		for (int i = 0; i < xAxis; i++) {
+			for (int k = 0; k < yAxis; k++) {
+				positionsString += "pos(f" + count + ",(" + i + "," + k + ").\n";
+				freeMap[i][k] = count;
 				count++;
-
 			}
 		}
+		
+		initFreeFields();
+	}
 
-		facts.setText(fields + free + positions);
+	private void initFreeFields() {
+		freeString = "";
+		blockedString = "";
+		int count = 1;
+		for(int i = 0; i < xAxis; i++){
+			for(int k = 0; k < yAxis; k++){
+				if(freeMap[i][k] == count){
+					freeString += "free(f" + count + ").\n";
+				}else if(freeMap[i][k] == count*-1){
+					blockedString += "blocked(f" + count + ").\n";
+				}
+				count++;
+			}
+		}
+		facts.setText(fieldsString + positionsString + freeString + blockedString);
 	}
 
 	private Dimension getDimension() {
@@ -356,6 +379,7 @@ public class PrologInterface implements ActionListener {
 						for (int k = 0; k < buttons[i].length; k++) {
 							buttons[i][k].setIcon(null);
 							buttons[i][k].setToolTipText("");
+							clearFreeMap();
 						}
 					}
 					thymioOnField = false;
@@ -368,6 +392,17 @@ public class PrologInterface implements ActionListener {
 		controlPanel.add(clearButton);
 		controlPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		return controlPanel;
+	}
+
+	protected void clearFreeMap() {
+		for(int i = 0; i < freeMap.length; i++){
+			for(int k = 0; k < freeMap[i].length; k++){
+				if(freeMap[i][k] < 0){
+					freeMap[i][k]*=-1;
+				}
+			}
+		}
+		initFreeFields();
 	}
 
 	private JPanel map() {
@@ -410,24 +445,31 @@ public class PrologInterface implements ActionListener {
 						thymioOnField = true;
 						gb.setToolTipText(type);
 						gb.setIcon(new ImageIcon(type));
+						freeMap[row][col] *= -1;
+						initFreeFields();
 					} else if (!goalOnField
 							&& type.equals("resources/finish.png")) {
 						goalOnField = true;
 						gb.setToolTipText(type);
 						gb.setIcon(new ImageIcon(type));
 					} else if (type.equals("resources/obstacle.png")) {
-						System.out.println(row + "," + (col));
+						freeMap[row][col] *= -1;
+						initFreeFields();
 						gb.setToolTipText(type);
 						gb.setIcon(new ImageIcon(type));
 					}
 				} else if (gb.getToolTipText().equals(type)) {
 					if (type.equals("resources/thymio.png")) {
 						gb.setIcon(null);
+						freeMap[row][col] *= -1;
+						initFreeFields();
 						thymioOnField = false;
 					} else if (type.equals("resources/finish.png")) {
 						gb.setIcon(null);
 						goalOnField = false;
 					} else if (type.equals("resources/obstacle.png")) {
+						freeMap[row][col] *= -1;
+						initFreeFields();
 						gb.setIcon(null);
 					}
 				}
