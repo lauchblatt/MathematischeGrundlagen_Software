@@ -72,6 +72,7 @@ public class PrologInterface implements ActionListener {
 	private String fieldsString;
 	private String freeString;
 	private String blockedString;
+	private String thymioString = "";
 	
 	private ActionListener ae;
 
@@ -130,12 +131,13 @@ public class PrologInterface implements ActionListener {
 			}
 		}
 		
-		initFreeFields();
+		updateFacts();
 	}
 
-	private void initFreeFields() {
+	private void updateFacts() {
 		freeString = "";
 		blockedString = "";
+		
 		int count = 1;
 		for(int i = 0; i < xAxis; i++){
 			for(int k = 0; k < yAxis; k++){
@@ -147,7 +149,9 @@ public class PrologInterface implements ActionListener {
 				count++;
 			}
 		}
-		facts.setText(fieldsString + positionsString + freeString + blockedString);
+		
+		
+		facts.setText(fieldsString + positionsString + freeString + blockedString + thymioString);
 	}
 
 	private Dimension getDimension() {
@@ -402,7 +406,7 @@ public class PrologInterface implements ActionListener {
 				}
 			}
 		}
-		initFreeFields();
+		updateFacts();
 	}
 
 	private JPanel map() {
@@ -445,8 +449,9 @@ public class PrologInterface implements ActionListener {
 						thymioOnField = true;
 						gb.setToolTipText(type);
 						gb.setIcon(new ImageIcon(type));
+						generateThymioFact(1, row, col);
 						freeMap[row][col] *= -1;
-						initFreeFields();
+						updateFacts();
 					} else if (!goalOnField
 							&& type.equals("resources/finish.png")) {
 						goalOnField = true;
@@ -454,7 +459,7 @@ public class PrologInterface implements ActionListener {
 						gb.setIcon(new ImageIcon(type));
 					} else if (type.equals("resources/obstacle.png")) {
 						freeMap[row][col] *= -1;
-						initFreeFields();
+						updateFacts();
 						gb.setToolTipText(type);
 						gb.setIcon(new ImageIcon(type));
 					}
@@ -462,14 +467,15 @@ public class PrologInterface implements ActionListener {
 					if (type.equals("resources/thymio.png")) {
 						gb.setIcon(null);
 						freeMap[row][col] *= -1;
-						initFreeFields();
+						generateThymioFact(0, row, col);
+						updateFacts();
 						thymioOnField = false;
 					} else if (type.equals("resources/finish.png")) {
 						gb.setIcon(null);
 						goalOnField = false;
 					} else if (type.equals("resources/obstacle.png")) {
 						freeMap[row][col] *= -1;
-						initFreeFields();
+						updateFacts();
 						gb.setIcon(null);
 					}
 				}
@@ -477,6 +483,14 @@ public class PrologInterface implements ActionListener {
 
 		});
 		return b;
+	}
+
+	protected void generateThymioFact(int i, int row, int col) {
+		if(i == 1){
+			thymioString = "Thymio(t)." + "\n" + "pos(t,(" + row + "," + col +")).\n";
+		}else{
+			thymioString = "";
+		}
 	}
 
 	protected JButton getGridButton(int row, int col) {
