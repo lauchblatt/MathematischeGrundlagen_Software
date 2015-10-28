@@ -3,14 +3,10 @@ package gui;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.HashMap;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -25,7 +21,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.JTree;
-import javax.swing.border.Border;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.MutableTreeNode;
@@ -33,10 +28,8 @@ import javax.swing.tree.TreePath;
 
 public class PrologInterface implements ActionListener {
 
-	private static final int WINDOW_WIDTH = 1048;
+	private static final int WINDOW_WIDTH = 1248;
 	private static final int WINDOW_HEIGHT = 800;
-	private static final Dimension WINDOW_DIMENSION = new Dimension(
-			WINDOW_WIDTH, WINDOW_HEIGHT);
 	private static final int[] CONTROL_BUTTON_DIMENSION = { 75, 75 };
 
 	private JFrame window;
@@ -82,6 +75,10 @@ public class PrologInterface implements ActionListener {
 	private JButton bwButton;
 	private JButton leftButton;
 	private JButton rightButton;
+
+	private JTextField requestField;
+	private JButton requestButton;
+	private JTextPane requestAnswer;
 
 	private ActionListener ae;
 
@@ -152,6 +149,8 @@ public class PrologInterface implements ActionListener {
 		rightButton.setPreferredSize(new Dimension(CONTROL_BUTTON_DIMENSION[0],
 				CONTROL_BUTTON_DIMENSION[1]));
 
+		customizeButtons();
+
 		lrPanel.add(leftButton);
 		lrPanel.add(sep);
 		lrPanel.add(rightButton);
@@ -160,13 +159,63 @@ public class PrologInterface implements ActionListener {
 		bwPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
 		lrPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
 
-		control.add(fwPanel);
-		control.add(lrPanel);
-		control.add(bwPanel);
-		customizeButtons();
+		JPanel requestPanel = new JPanel();
+		requestPanel.setLayout(new BoxLayout(requestPanel, BoxLayout.Y_AXIS));
 
-		control.setBorder(BorderFactory.createEmptyBorder(0, 50, 0, 50));
+		JLabel requestHint = new JLabel("Type in Requests:");
+		requestHint.setAlignmentX(Component.CENTER_ALIGNMENT);
+		requestField = new JTextField();
+		requestField.setMaximumSize(new Dimension(400, 35));
+		requestField.setAlignmentX(Component.CENTER_ALIGNMENT);
+		requestButton = new JButton("Send Request");
+		requestButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+		
+		setListenerForRequest();
+
+		requestPanel.add(requestHint);
+		requestPanel.add(requestField);
+		requestPanel.add(requestButton);
+		requestPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+		JPanel buttonPanel = new JPanel();
+		buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
+		buttonPanel.add(fwPanel);
+		buttonPanel.add(lrPanel);
+		buttonPanel.add(bwPanel);
+		buttonPanel.setSize(550, 600);
+
+		
+		JPanel requestAnswerPanel = new JPanel();
+		requestAnswerPanel.setLayout(new BoxLayout(requestAnswerPanel, BoxLayout.X_AXIS));
+		JLabel requestAnswerHint = new JLabel("Status: ");
+		requestAnswerHint.setAlignmentX(Component.CENTER_ALIGNMENT);
+		requestAnswer = new JTextPane();
+		requestAnswer.setMaximumSize(new Dimension(400, 35));
+		requestAnswer.setAlignmentX(Component.CENTER_ALIGNMENT);
+		requestAnswer.setBackground(new Color(0xeeeeee));
+		requestAnswerPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		
+		requestAnswerPanel.add(requestAnswerHint);
+		requestAnswerPanel.add(requestAnswer);
+		
+		control.add(requestPanel);
+		control.add(buttonPanel);
+		control.add(requestAnswerPanel);
+		
+		
 		return control;
+	}
+
+	private void setListenerForRequest() {
+		requestButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if(requestField.getText().equals("")){
+					requestAnswer.setText("Type in Request...");
+				}
+			}
+		});
 	}
 
 	private void customizeButtons() {
@@ -307,6 +356,7 @@ public class PrologInterface implements ActionListener {
 		rulePanel.setLayout(new BoxLayout(rulePanel, BoxLayout.Y_AXIS));
 		rulePanel.add(ruleInput());
 		rulePanel.add(ruleInfo());
+		rulePanel.setBorder(BorderFactory.createEmptyBorder(0,0,0,50));
 		return rulePanel;
 	}
 
@@ -483,13 +533,12 @@ public class PrologInterface implements ActionListener {
 				int row = i;
 				int col = k;
 
-				// if (i > 0) {
-				// col = k + xAxis * i - i;
-				// }
 				JButton field = createGridButton(row, col);
 				field.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1,
 						Color.BLACK));
-
+				field.setMaximumSize(new Dimension(35,35));
+				field.setMinimumSize(new Dimension(35,35));
+				
 				buttons[i][k] = (field);
 				mapPanel.add(field);
 			}
@@ -557,8 +606,6 @@ public class PrologInterface implements ActionListener {
 		return b;
 	}
 
-	
-	// TODO: FEHLer ausbessern Läufti läuft <3
 	protected void generateObstacleString(int i, int row, int col) {
 		if (i == 1) {
 			obstacleString += "Obstacle(o" + obstacleCounter + ")." + "\n"
@@ -566,7 +613,6 @@ public class PrologInterface implements ActionListener {
 					+ ")).\n";
 			obstacleCounter++;
 		} else {
-			obstacleString = "";
 			String known = ",(" + row + "," + col + ")).";
 			String[] obstArray = obstacleString.split("\n");
 			for (int k = 0; k < obstArray.length; k++) {
@@ -575,6 +621,8 @@ public class PrologInterface implements ActionListener {
 					obstArray[k - 1] = "";
 				}
 			}
+			obstacleString = "";
+
 			for (int k = 0; k < obstArray.length; k++) {
 				if (obstArray[k] != "") {
 					obstacleString += obstArray[k] + "\n";
