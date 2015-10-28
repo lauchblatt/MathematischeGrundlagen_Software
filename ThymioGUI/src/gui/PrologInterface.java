@@ -3,6 +3,7 @@ package gui;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
@@ -32,10 +33,11 @@ import javax.swing.tree.TreePath;
 
 public class PrologInterface implements ActionListener {
 
-	private static final int WINDOW_WIDTH = 960;
+	private static final int WINDOW_WIDTH = 1048;
 	private static final int WINDOW_HEIGHT = 800;
 	private static final Dimension WINDOW_DIMENSION = new Dimension(
 			WINDOW_WIDTH, WINDOW_HEIGHT);
+	private static final int[] CONTROL_BUTTON_DIMENSION = { 75, 75 };
 
 	private JFrame window;
 	private JPanel windowPanel;
@@ -66,7 +68,7 @@ public class PrologInterface implements ActionListener {
 
 	private JButton[][] buttons;
 	private int[][] freeMap;
-
+	private int obstacleCounter = 1;
 
 	private String positionsString;
 	private String fieldsString;
@@ -74,7 +76,13 @@ public class PrologInterface implements ActionListener {
 	private String blockedString;
 	private String thymioString = "";
 	private String goalString = "";
-	
+	private String obstacleString = "";
+
+	private JButton fwButton;
+	private JButton bwButton;
+	private JButton leftButton;
+	private JButton rightButton;
+
 	private ActionListener ae;
 
 	private JButton removeRule;
@@ -100,7 +108,7 @@ public class PrologInterface implements ActionListener {
 
 		buttons = new JButton[xAxis][yAxis];
 		freeMap = new int[xAxis][yAxis];
-		
+
 		Dimension d = getDimension();
 		windowPanel.setMinimumSize(d);
 		window.setMinimumSize(d);
@@ -116,6 +124,58 @@ public class PrologInterface implements ActionListener {
 
 	}
 
+	private JPanel controlPanel() {
+		JPanel control = new JPanel();
+		control.setLayout(new BoxLayout(control, BoxLayout.Y_AXIS));
+
+		JPanel fwPanel = new JPanel();
+		fwPanel.setLayout(new BoxLayout(fwPanel, BoxLayout.X_AXIS));
+		fwButton = new JButton();
+		fwButton.setPreferredSize(new Dimension(CONTROL_BUTTON_DIMENSION[0],
+				CONTROL_BUTTON_DIMENSION[1]));
+		fwPanel.add(fwButton);
+
+		JPanel bwPanel = new JPanel();
+		bwPanel.setLayout(new BoxLayout(bwPanel, BoxLayout.X_AXIS));
+		bwButton = new JButton();
+		bwButton.setPreferredSize(new Dimension(CONTROL_BUTTON_DIMENSION[0],
+				CONTROL_BUTTON_DIMENSION[1]));
+		bwPanel.add(bwButton);
+
+		JPanel lrPanel = new JPanel();
+		lrPanel.setLayout(new BoxLayout(lrPanel, BoxLayout.X_AXIS));
+		leftButton = new JButton();
+		rightButton = new JButton();
+		JLabel sep = new JLabel("      ");
+		leftButton.setPreferredSize(new Dimension(CONTROL_BUTTON_DIMENSION[0],
+				CONTROL_BUTTON_DIMENSION[1]));
+		rightButton.setPreferredSize(new Dimension(CONTROL_BUTTON_DIMENSION[0],
+				CONTROL_BUTTON_DIMENSION[1]));
+
+		lrPanel.add(leftButton);
+		lrPanel.add(sep);
+		lrPanel.add(rightButton);
+
+		fwPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
+		bwPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
+		lrPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
+
+		control.add(fwPanel);
+		control.add(lrPanel);
+		control.add(bwPanel);
+		customizeButtons();
+
+		control.setBorder(BorderFactory.createEmptyBorder(0, 50, 0, 50));
+		return control;
+	}
+
+	private void customizeButtons() {
+		bwButton.setIcon(new ImageIcon("resources/button_bw.png"));
+		fwButton.setIcon(new ImageIcon("resources/button_fw.png"));
+		leftButton.setIcon(new ImageIcon("resources/button_left.png"));
+		rightButton.setIcon(new ImageIcon("resources/button_right.png"));
+	}
+
 	private void initFacts() {
 		fieldsString = "";
 		positionsString = "";
@@ -126,33 +186,34 @@ public class PrologInterface implements ActionListener {
 		int count = 1;
 		for (int i = 0; i < xAxis; i++) {
 			for (int k = 0; k < yAxis; k++) {
-				positionsString += "pos(f" + count + ",(" + i + "," + k + ").\n";
+				positionsString += "pos(f" + count + ",(" + i + "," + k
+						+ ").\n";
 				freeMap[i][k] = count;
 				count++;
 			}
 		}
-		
+
 		updateFacts();
 	}
 
 	private void updateFacts() {
 		freeString = "";
 		blockedString = "";
-		
+
 		int count = 1;
-		for(int i = 0; i < xAxis; i++){
-			for(int k = 0; k < yAxis; k++){
-				if(freeMap[i][k] == count){
+		for (int i = 0; i < xAxis; i++) {
+			for (int k = 0; k < yAxis; k++) {
+				if (freeMap[i][k] == count) {
 					freeString += "free(f" + count + ").\n";
-				}else if(freeMap[i][k] == count*-1){
+				} else if (freeMap[i][k] == count * -1) {
 					blockedString += "blocked(f" + count + ").\n";
 				}
 				count++;
 			}
 		}
-		
-		
-		facts.setText(fieldsString + positionsString + freeString + blockedString + thymioString + goalString);
+
+		facts.setText(fieldsString + positionsString + freeString
+				+ blockedString + thymioString + goalString + obstacleString);
 	}
 
 	private Dimension getDimension() {
@@ -238,7 +299,7 @@ public class PrologInterface implements ActionListener {
 	private void initComponents() {
 		window.add(mapPanel());
 		window.add(rulePanel());
-
+		window.add(controlPanel());
 	}
 
 	private JPanel rulePanel() {
@@ -400,14 +461,15 @@ public class PrologInterface implements ActionListener {
 	}
 
 	protected void clearFreeMap() {
-		for(int i = 0; i < freeMap.length; i++){
-			for(int k = 0; k < freeMap[i].length; k++){
-				if(freeMap[i][k] < 0){
-					freeMap[i][k]*=-1;
+		for (int i = 0; i < freeMap.length; i++) {
+			for (int k = 0; k < freeMap[i].length; k++) {
+				if (freeMap[i][k] < 0) {
+					freeMap[i][k] *= -1;
 				}
 			}
 		}
-		
+		obstacleCounter = 1;
+		obstacleString = "";
 		thymioString = "";
 		goalString = "";
 		updateFacts();
@@ -427,7 +489,7 @@ public class PrologInterface implements ActionListener {
 				JButton field = createGridButton(row, col);
 				field.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1,
 						Color.BLACK));
-				
+
 				buttons[i][k] = (field);
 				mapPanel.add(field);
 			}
@@ -465,6 +527,7 @@ public class PrologInterface implements ActionListener {
 						updateFacts();
 					} else if (type.equals("resources/obstacle.png")) {
 						freeMap[row][col] *= -1;
+						generateObstacleString(1, row, col);
 						updateFacts();
 						gb.setToolTipText(type);
 						gb.setIcon(new ImageIcon(type));
@@ -483,6 +546,7 @@ public class PrologInterface implements ActionListener {
 						updateFacts();
 					} else if (type.equals("resources/obstacle.png")) {
 						freeMap[row][col] *= -1;
+						generateObstacleString(0, row, col);
 						updateFacts();
 						gb.setIcon(null);
 					}
@@ -493,20 +557,46 @@ public class PrologInterface implements ActionListener {
 		return b;
 	}
 
+	
+	// TODO: FEHLer ausbessern Läufti läuft <3
+	protected void generateObstacleString(int i, int row, int col) {
+		if (i == 1) {
+			obstacleString += "Obstacle(o" + obstacleCounter + ")." + "\n"
+					+ "pos(o" + obstacleCounter + ",(" + row + "," + col
+					+ ")).\n";
+			obstacleCounter++;
+		} else {
+			obstacleString = "";
+			String known = ",(" + row + "," + col + ")).";
+			String[] obstArray = obstacleString.split("\n");
+			for (int k = 0; k < obstArray.length; k++) {
+				if (obstArray[k].contains(known)) {
+					obstArray[k] = "";
+					obstArray[k - 1] = "";
+				}
+			}
+			for (int k = 0; k < obstArray.length; k++) {
+				if (obstArray[k] != "") {
+					obstacleString += obstArray[k] + "\n";
+				}
+			}
+		}
+	}
+
 	protected void generateGoalFact(int i, int row, int col) {
-		if(i == 1){
-			goalString = "Goal(z)." + "\n" + "pos(z,(" + row + "," + col +")).\n";
-		}else{
+		if (i == 1) {
+			goalString = "Goal(z)." + "\n" + "pos(z,(" + row + "," + col
+					+ ")).\n";
+		} else {
 			goalString = "";
 		}
 	}
-	
-	
 
 	protected void generateThymioFact(int i, int row, int col) {
-		if(i == 1){
-			thymioString = "Thymio(t)." + "\n" + "pos(t,(" + row + "," + col +")).\n";
-		}else{
+		if (i == 1) {
+			thymioString = "Thymio(t)." + "\n" + "pos(t,(" + row + "," + col
+					+ ")).\n";
+		} else {
 			thymioString = "";
 		}
 	}
