@@ -26,6 +26,8 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreePath;
 
+import prolog.JPLInterface;
+
 public class PrologInterface implements ActionListener {
 
 	private static final int WINDOW_WIDTH = 1248;
@@ -83,6 +85,8 @@ public class PrologInterface implements ActionListener {
 	private ActionListener ae;
 
 	private JButton removeRule;
+	
+	private JPLInterface jpl;
 
 	public PrologInterface() {
 		initWindow();
@@ -97,6 +101,8 @@ public class PrologInterface implements ActionListener {
 		windowPanel = new JPanel();
 		windowPanel.setLayout(new BoxLayout(windowPanel, BoxLayout.X_AXIS));
 		window.setVisible(false);
+		
+		jpl = new JPLInterface();
 	}
 
 	public void start(int xAxis, int yAxis, Point loc) {
@@ -226,6 +232,7 @@ public class PrologInterface implements ActionListener {
 	}
 
 	private void initFacts() {
+		System.out.println("initFacts");
 		fieldsString = "";
 		positionsString = "";
 		for (int i = 0; i < xAxis * yAxis; i++) {
@@ -236,16 +243,18 @@ public class PrologInterface implements ActionListener {
 		for (int i = 0; i < xAxis; i++) {
 			for (int k = 0; k < yAxis; k++) {
 				positionsString += "pos(f" + count + ",(" + i + "," + k
-						+ ").\n";
+						+ ")).\n";
+				
 				freeMap[i][k] = count;
 				count++;
 			}
 		}
-
+		
 		updateFacts();
 	}
 
 	private void updateFacts() {
+		System.out.println("updateFacts");
 		freeString = "";
 		blockedString = "";
 
@@ -263,6 +272,8 @@ public class PrologInterface implements ActionListener {
 
 		facts.setText(fieldsString + positionsString + freeString
 				+ blockedString + thymioString + goalString + obstacleString);
+		System.out.println("test");
+		jpl.updateKnowledgeBase(facts.getText());
 	}
 
 	private Dimension getDimension() {
@@ -608,7 +619,7 @@ public class PrologInterface implements ActionListener {
 
 	protected void generateObstacleString(int i, int row, int col) {
 		if (i == 1) {
-			obstacleString += "Obstacle(o" + obstacleCounter + ")." + "\n"
+			obstacleString += "obstacle(o" + obstacleCounter + ")." + "\n"
 					+ "pos(o" + obstacleCounter + ",(" + row + "," + col
 					+ ")).\n";
 			obstacleCounter++;
@@ -633,7 +644,7 @@ public class PrologInterface implements ActionListener {
 
 	protected void generateGoalFact(int i, int row, int col) {
 		if (i == 1) {
-			goalString = "Goal(z)." + "\n" + "pos(z,(" + row + "," + col
+			goalString = "goal(z)." + "\n" + "pos(z,(" + row + "," + col
 					+ ")).\n";
 		} else {
 			goalString = "";
@@ -642,7 +653,7 @@ public class PrologInterface implements ActionListener {
 
 	protected void generateThymioFact(int i, int row, int col) {
 		if (i == 1) {
-			thymioString = "Thymio(t)." + "\n" + "pos(t,(" + row + "," + col
+			thymioString = "thymio(t)." + "\n" + "pos(t,(" + row + "," + col
 					+ ")).\n";
 		} else {
 			thymioString = "";

@@ -14,25 +14,27 @@ public class JPLInterface {
 	
 	public JPLInterface(){
 		clauses = new ArrayList<String>();
-		resetKnowledgeBase();
-		test();
-		
+		resetKnowledgeBase();	
 	}
 	
 	public void test(){
-		addClause("my_clause(1,0)");
-		addClause("my_clause(2,0)");
-		addClause("my_clause(3,0)");
-		addClause("your_clause(X,Y) :- my_clause(X,Y)");
-		
-		System.out.println(queryFact("your_clause(2,0)"));
-		resetKnowledgeBase();
-		System.out.println(queryFact("your_clause(2,0)"));
-		
 	}
 	
 	public void resetKnowledgeBase(){
 		retractAll();
+		System.out.println("reset Knowledge Base");
+	}
+	
+	public void updateKnowledgeBase(String text){
+		resetKnowledgeBase();
+		
+		String[] facts = text.split("\\.\n");
+		
+		for(int i = 0; i < facts.length; i++){
+			System.out.println(facts[i]);
+			addClause(facts[i]);
+		}
+		
 	}
 	
 	private void retractAll(){
