@@ -224,6 +224,14 @@ public class PrologInterface implements ActionListener {
 					requestAnswer.setText("Type in Request...");
 				} else{
 					// Send Requests to Prolog
+					// Falschangaben abfangen?
+					boolean hasSolution = jpl.queryClause(requestField.getText());
+					if(hasSolution){
+						System.out.println("hat Lösung");
+					}else{
+						System.out.println("hat keine Lösung");
+					}
+					
 				}
 			}
 		});

@@ -88,7 +88,7 @@ public class JPLInterface {
 		return retractQuery;
 	}
 	
-	public boolean queryFact(String fact){
+	public boolean queryClause(String fact){
 		Query q = new Query(fact);
 		return q.hasSolution();
 	}
