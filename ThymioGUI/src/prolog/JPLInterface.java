@@ -10,40 +10,72 @@ import jpl.JPL;
 
 public class JPLInterface {
 	
-	private ArrayList<String> clauses;
+	private ArrayList<String> facts;
+	private ArrayList<String> rules;
 	
 	public JPLInterface(){
-		clauses = new ArrayList<String>();
-		resetKnowledgeBase();	
+		facts = new ArrayList<String>();
+		rules = new ArrayList<String>();
+		resetAll();	
 	}
 	
 	public void test(){
+		System.out.println("############ TEST");
+		for(int i = 0; i < facts.size(); i++){
+			System.out.println(facts.get(i));
+		}
+		for(int i = 0; i < rules.size(); i++){
+			System.out.println(rules.get(i));
+		}
 	}
 	
-	public void resetKnowledgeBase(){
+	public void resetAll(){
 		retractAll();
-		System.out.println("reset Knowledge Base");
 	}
 	
-	public void updateKnowledgeBase(String text){
-		resetKnowledgeBase();
+	public void resetFacts(){
+		retractAllFacts();
+	}
+	
+	public void resetRules(){
+		retractAllRules();
+	}
+	
+	public void removeRuleByIndex(int index){
+		retractClause(rules.get(index));
+		rules.remove(index);
+	}
+	
+	public void updateFacts(String text){
+		resetFacts();
 		
 		String[] facts = text.split("\\.\n");
 		
 		for(int i = 0; i < facts.length; i++){
-			System.out.println(facts[i]);
-			addClause(facts[i]);
+			addFact(facts[i]);
 		}
 		
 	}
 	
 	private void retractAll(){
-		for(int i = 0; i < clauses.size(); i++){
-			String currentFact = clauses.get(i);
-			System.out.println(currentFact);
+		retractAllFacts();
+		retractAllRules();
+	}
+	
+	private void retractAllFacts(){
+		for(int i = 0; i < facts.size(); i++){
+			String currentFact = facts.get(i);
 			retractClause(currentFact);
 		}
-		clauses.clear();
+		facts.clear();
+	}
+	
+	private void retractAllRules(){
+		for(int i = 0; i < rules.size(); i++){
+			String currentRule = rules.get(i);
+			retractClause(currentRule);
+		}
+		rules.clear();
 	}
 	
 	private void retractClause(String clause){
@@ -61,9 +93,14 @@ public class JPLInterface {
 		return q.hasSolution();
 	}
 	
-	public void addClause(String clause){
-		clauses.add(clause);
+	public void addFact(String clause){
+		facts.add(clause);
 		new Query (buildAssertQuery(clause)).hasSolution();
+	}
+	
+	public void addRule(String rule){
+		rules.add(rule);
+		new Query (buildAssertQuery(rule)).hasSolution();
 	}
 	
 	private String buildAssertQuery(String clause){
@@ -71,8 +108,12 @@ public class JPLInterface {
 		return assertQuery;
 	}
 	
-	public ArrayList<String> getClauses(){
-		return clauses;
+	public ArrayList<String> getFacts(){
+		return facts;
+	}
+	
+	public ArrayList<String> getRules(){
+		return rules;
 	}
 
 }

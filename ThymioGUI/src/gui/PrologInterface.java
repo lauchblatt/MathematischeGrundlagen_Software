@@ -26,6 +26,7 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreePath;
 
+import parser.ClauseProcessor;
 import prolog.JPLInterface;
 
 public class PrologInterface implements ActionListener {
@@ -87,6 +88,7 @@ public class PrologInterface implements ActionListener {
 	private JButton removeRule;
 	
 	private JPLInterface jpl;
+	private ClauseProcessor cp;
 
 	public PrologInterface() {
 		initWindow();
@@ -103,6 +105,7 @@ public class PrologInterface implements ActionListener {
 		window.setVisible(false);
 		
 		jpl = new JPLInterface();
+		cp = new ClauseProcessor();
 	}
 
 	public void start(int xAxis, int yAxis, Point loc) {
@@ -219,6 +222,8 @@ public class PrologInterface implements ActionListener {
 			public void actionPerformed(ActionEvent e) {
 				if(requestField.getText().equals("")){
 					requestAnswer.setText("Type in Request...");
+				} else{
+					// Send Requests to Prolog
 				}
 			}
 		});
@@ -232,7 +237,6 @@ public class PrologInterface implements ActionListener {
 	}
 
 	private void initFacts() {
-		System.out.println("initFacts");
 		fieldsString = "";
 		positionsString = "";
 		for (int i = 0; i < xAxis * yAxis; i++) {
@@ -254,7 +258,6 @@ public class PrologInterface implements ActionListener {
 	}
 
 	private void updateFacts() {
-		System.out.println("updateFacts");
 		freeString = "";
 		blockedString = "";
 
@@ -272,8 +275,8 @@ public class PrologInterface implements ActionListener {
 
 		facts.setText(fieldsString + positionsString + freeString
 				+ blockedString + thymioString + goalString + obstacleString);
-		System.out.println("test");
-		jpl.updateKnowledgeBase(facts.getText());
+		jpl.updateFacts(facts.getText());
+		jpl.test();
 	}
 
 	private Dimension getDimension() {
@@ -330,6 +333,10 @@ public class PrologInterface implements ActionListener {
 					MutableTreeNode parent = (MutableTreeNode) node.getParent();
 					int index = parent.getIndex(node);
 					parent.remove(node);
+					
+					//remove Rule in Prolog
+					jpl.removeRuleByIndex(index);
+					jpl.test();
 
 					DefaultTreeModel model = (DefaultTreeModel) ruleTree
 							.getModel();
@@ -443,6 +450,14 @@ public class PrologInterface implements ActionListener {
 								new DefaultMutableTreeNode(input.getText()),
 								root, root.getChildCount());
 						model.reload(root);
+						
+						//Rules added here
+						//Parser Problems
+						//System.out.println(cp.process(input.getText()));
+						
+						//Lets assume everything is prolog
+						jpl.addRule(input.getText());
+						jpl.test();
 						input.setText("");
 					}
 				}

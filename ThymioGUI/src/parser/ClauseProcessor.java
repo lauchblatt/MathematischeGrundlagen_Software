@@ -10,7 +10,7 @@ public class ClauseProcessor {
 	public ClauseProcessor() {
 	}
 	
-	public void process(String input) {
+	public String process(String input) {
 		HelloParser parser=new HelloParser(new CommonTokenStream(new HelloLexer(new ANTLRInputStream(input))));
 
 		parser.setBuildParseTree(true);  
@@ -20,8 +20,9 @@ public class ClauseProcessor {
 		
 		walker.walk(listener,tree);
 		
-		System.out.println(listener.getPrologClause());
+		//System.out.println(listener.getPrologClause());
 		//System.out.println(Util.textToTerm(listener.getPrologClause()));
+		return listener.getPrologClause();
 	}
 	
 	public static void main(String [] args) {
