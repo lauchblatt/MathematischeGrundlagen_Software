@@ -85,6 +85,7 @@ public class PrologInterface implements ActionListener {
 	private JTextField requestField;
 	private JButton requestButton;
 	private JTextPane requestAnswer;
+	private JTextPane arrowAnswer;
 
 	private ActionListener ae;
 
@@ -181,12 +182,17 @@ public class PrologInterface implements ActionListener {
 		requestField.setAlignmentX(Component.CENTER_ALIGNMENT);
 		requestButton = new JButton("Send Request");
 		requestButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+		requestAnswer = new JTextPane();
+		requestAnswer.setMaximumSize(new Dimension(400, 35));
+		requestAnswer.setAlignmentX(Component.CENTER_ALIGNMENT);
+		requestAnswer.setBackground(new Color(0xeeeeee));
 		
 		setListenerForRequest();
 
 		requestPanel.add(requestHint);
 		requestPanel.add(requestField);
 		requestPanel.add(requestButton);
+		requestPanel.add(requestAnswer);
 		requestPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
 		JPanel buttonPanel = new JPanel();
@@ -201,14 +207,14 @@ public class PrologInterface implements ActionListener {
 		requestAnswerPanel.setLayout(new BoxLayout(requestAnswerPanel, BoxLayout.X_AXIS));
 		JLabel requestAnswerHint = new JLabel("Status: ");
 		requestAnswerHint.setAlignmentX(Component.CENTER_ALIGNMENT);
-		requestAnswer = new JTextPane();
-		requestAnswer.setMaximumSize(new Dimension(400, 35));
-		requestAnswer.setAlignmentX(Component.CENTER_ALIGNMENT);
-		requestAnswer.setBackground(new Color(0xeeeeee));
+		arrowAnswer = new JTextPane();
+		arrowAnswer.setMaximumSize(new Dimension(400, 35));
+		arrowAnswer.setAlignmentX(Component.CENTER_ALIGNMENT);
+		arrowAnswer.setBackground(new Color(0xeeeeee));
 		requestAnswerPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		
 		requestAnswerPanel.add(requestAnswerHint);
-		requestAnswerPanel.add(requestAnswer);
+		requestAnswerPanel.add(arrowAnswer);
 		
 		control.add(requestPanel);
 		control.add(buttonPanel);
@@ -232,11 +238,11 @@ public class PrologInterface implements ActionListener {
 					boolean hasSolution = jpl.queryClause(requestField.getText());
 					if(hasSolution){
 						
-						System.out.println("hat Lösung");
+						System.out.println("hat Lï¿½sung");
 						// ... if yes ask for all solutions
 						Map<String, Term>[] solutions = jpl.request(requestField.getText());
 					}else{
-						System.out.println("hat keine Lösung");
+						System.out.println("hat keine Lï¿½sung");
 					}
 					
 				}
@@ -274,7 +280,7 @@ public class PrologInterface implements ActionListener {
 
 	private void updateFacts() {
 		freeString = "";
-		blockedString = "";
+		//blockedString = "";
 
 		int count = 1;
 		for (int i = 0; i < xAxis; i++) {
@@ -282,14 +288,15 @@ public class PrologInterface implements ActionListener {
 				if (freeMap[i][k] == count) {
 					freeString += "free(f" + count + ").\n";
 				} else if (freeMap[i][k] == count * -1) {
-					blockedString += "blocked(f" + count + ").\n";
+					//blockedString += "blocked(f" + count + ").\n";
 				}
 				count++;
 			}
 		}
 
 		facts.setText(fieldsString + positionsString + freeString
-				+ blockedString + thymioString + goalString + obstacleString);
+				//+ blockedString 
+				+ thymioString + goalString + obstacleString);
 		jpl.updateFacts(facts.getText());
 		jpl.test();
 	}
