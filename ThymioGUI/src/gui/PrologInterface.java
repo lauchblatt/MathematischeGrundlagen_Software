@@ -7,6 +7,7 @@ import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -25,6 +26,8 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreePath;
+
+import org.jpl7.Term;
 
 import parser.ClauseProcessor;
 import prolog.JPLInterface;
@@ -225,9 +228,13 @@ public class PrologInterface implements ActionListener {
 				} else{
 					// Send Requests to Prolog
 					// Falschangaben abfangen?
+					// Ask if Solution exists...
 					boolean hasSolution = jpl.queryClause(requestField.getText());
 					if(hasSolution){
+						
 						System.out.println("hat Lösung");
+						// ... if yes ask for all solutions
+						Map<String, Term>[] solutions = jpl.request(requestField.getText());
 					}else{
 						System.out.println("hat keine Lösung");
 					}

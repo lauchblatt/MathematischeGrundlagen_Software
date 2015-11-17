@@ -1,6 +1,8 @@
 package prolog;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Map;
 
 import org.jpl7.Atom;
 import org.jpl7.Query;
@@ -86,6 +88,20 @@ public class JPLInterface {
 	private String buildRetractQuery(String clause){
 		String retractQuery = "retract(" + clause +")";
 		return retractQuery;
+	}
+	
+	public Map<String, Term>[] request(String request){
+		Query q = new Query(request);
+		Map<String, Term>[] solutions = q.allSolutions(request);
+		System.out.println("Länge der Map " + solutions.length);
+		for(int i = 0; i < solutions.length; i++){
+			Iterator it = solutions[i].entrySet().iterator();
+			while(it.hasNext()){
+				Map.Entry pair = (Map.Entry)it.next();
+		        System.out.println(pair.getKey() + " = " + pair.getValue());
+		        it.remove();			}
+		}
+		return solutions;
 	}
 	
 	public boolean queryClause(String fact){
