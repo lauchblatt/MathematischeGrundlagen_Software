@@ -14,10 +14,12 @@ public class JPLInterface {
 	
 	private ArrayList<String> facts;
 	private ArrayList<String> rules;
+	private String currentRequestError;
 	
 	public JPLInterface(){
 		facts = new ArrayList<String>();
 		rules = new ArrayList<String>();
+		currentRequestError = "";
 		resetAll();	
 	}
 	
@@ -93,20 +95,40 @@ public class JPLInterface {
 	public Map<String, Term>[] request(String request){
 		Query q = new Query(request);
 		Map<String, Term>[] solutions = q.allSolutions(request);
-		System.out.println("Länge der Map " + solutions.length);
-		for(int i = 0; i < solutions.length; i++){
-			Iterator it = solutions[i].entrySet().iterator();
-			while(it.hasNext()){
-				Map.Entry pair = (Map.Entry)it.next();
-		        System.out.println(pair.getKey() + " = " + pair.getValue());
-		        it.remove();			}
-		}
+		
 		return solutions;
 	}
 	
 	public boolean queryClause(String fact){
-		Query q = new Query(fact);
-		return q.hasSolution();
+		try{
+			Query q = new Query(fact);
+			if(q.hasSolution()){
+				currentRequestError = "";
+				return true;
+			}else{
+				currentRequestError = "";
+				return false;
+			}
+		} catch (Exception e){
+			currentRequestError = getErrorType(e);
+			return false;
+		}
+	}
+	
+	private String getErrorType(Exception e){
+		String message = e.getMessage();
+		int pos1 = ordinalIndexOf(message, '(', 0);
+		int pos2 = ordinalIndexOf(message, '(', 1);
+		message = message.substring(pos1+1, pos2);
+
+		return message;
+	}
+	
+	private int ordinalIndexOf(String str, char c, int n) {
+	    int pos = str.indexOf(c, 0);
+	    while (n-- > 0 && pos != -1)
+	        pos = str.indexOf(c, pos+1);
+	    return pos;
 	}
 	
 	public void addFact(String clause){
@@ -130,6 +152,14 @@ public class JPLInterface {
 	
 	public ArrayList<String> getRules(){
 		return rules;
+	}
+
+	public String getCurrentRequestError() {
+		return currentRequestError;
+	}
+
+	public void setCurrentRequestError(String currentRequestError) {
+		this.currentRequestError = currentRequestError;
 	}
 
 }

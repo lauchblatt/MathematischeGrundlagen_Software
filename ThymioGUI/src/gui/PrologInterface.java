@@ -7,6 +7,7 @@ import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Iterator;
 import java.util.Map;
 
 import javax.swing.BorderFactory;
@@ -183,7 +184,7 @@ public class PrologInterface implements ActionListener {
 		requestButton = new JButton("Send Request");
 		requestButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 		requestAnswer = new JTextPane();
-		requestAnswer.setMaximumSize(new Dimension(400, 35));
+		requestAnswer.setMaximumSize(new Dimension(400, 200));
 		requestAnswer.setAlignmentX(Component.CENTER_ALIGNMENT);
 		requestAnswer.setBackground(new Color(0xeeeeee));
 		
@@ -238,11 +239,29 @@ public class PrologInterface implements ActionListener {
 					boolean hasSolution = jpl.queryClause(requestField.getText());
 					if(hasSolution){
 						
-						System.out.println("hat Lï¿½sung");
+						String answer = "TRUE";
+						
+						Color green = new Color(0, 255, 0);
+						requestAnswer.setForeground(green);
+						
 						// ... if yes ask for all solutions
 						Map<String, Term>[] solutions = jpl.request(requestField.getText());
+						
+						for(int i = 0; i < solutions.length; i++){
+							Iterator it = solutions[i].entrySet().iterator();
+							answer = answer + "\n " + (i+1) + ". Lösung: ";
+							while(it.hasNext()){
+								Map.Entry pair = (Map.Entry)it.next();
+								answer = answer + pair.getKey() + " = " + pair.getValue() + " ";
+						        it.remove();			}
+						}
+						
+						requestAnswer.setText(answer);
+						
 					}else{
-						System.out.println("hat keine Lï¿½sung");
+						Color red = new Color(255, 0, 0);
+						requestAnswer.setForeground(red);
+						requestAnswer.setText("FALSE -->" + jpl.getCurrentRequestError());
 					}
 					
 				}
