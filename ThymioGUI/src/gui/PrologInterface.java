@@ -31,6 +31,7 @@ import javax.swing.tree.TreePath;
 import org.jpl7.Term;
 
 import parser.ClauseProcessor;
+import prolog.GuiModel;
 import prolog.JPLInterface;
 
 public class PrologInterface implements ActionListener {
@@ -94,6 +95,7 @@ public class PrologInterface implements ActionListener {
 	
 	private JPLInterface jpl;
 	private ClauseProcessor cp;
+	private GuiModel guiModel;
 
 	public PrologInterface() {
 		initWindow();
@@ -111,11 +113,14 @@ public class PrologInterface implements ActionListener {
 		
 		jpl = new JPLInterface();
 		cp = new ClauseProcessor();
+		
 	}
 
 	public void start(int xAxis, int yAxis, Point loc) {
 		this.xAxis = xAxis;
 		this.yAxis = yAxis;
+		
+		guiModel = new GuiModel(xAxis, yAxis);
 
 		buttons = new JButton[xAxis][yAxis];
 		freeMap = new int[xAxis][yAxis];
@@ -132,6 +137,8 @@ public class PrologInterface implements ActionListener {
 		initEventListeners();
 		initTreeListener();
 		window.setVisible(true);
+		
+		
 
 	}
 
@@ -298,6 +305,9 @@ public class PrologInterface implements ActionListener {
 	}
 
 	private void updateFacts() {
+		
+		guiModel.resetBlocked();
+		
 		freeString = "";
 		//blockedString = "";
 
@@ -308,6 +318,11 @@ public class PrologInterface implements ActionListener {
 					freeString += "free(f" + count + ").\n";
 				} else if (freeMap[i][k] == count * -1) {
 					//blockedString += "blocked(f" + count + ").\n";
+					
+					//Set Model blocked
+					int[] blocked = new int[]{i, k};
+					guiModel.addToBlocked(blocked);
+					
 				}
 				count++;
 			}
