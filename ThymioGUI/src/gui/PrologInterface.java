@@ -99,6 +99,8 @@ public class PrologInterface implements ActionListener {
 	private ArrayList<int[]> blocked;
 	private int thymioX;
 	private int thymioY;
+	
+	String uiErrorMessage = "";
 
 	public PrologInterface() {
 		initWindow();
@@ -339,6 +341,7 @@ public class PrologInterface implements ActionListener {
 				+ thymioString + goalString + obstacleString);
 		jpl.updateFacts(facts.getText());
 		jpl.test();
+		
 		testModel();
 	}
 	
@@ -364,8 +367,46 @@ public class PrologInterface implements ActionListener {
 		}
 	}
 	
-	public void resetBlocked(){
+	private void resetBlocked(){
 		blocked.clear();
+	}
+	
+	private boolean testMovementInUI(int xMove, int yMove){
+		
+		uiErrorMessage = "";
+		
+		int newXPos = thymioX + xMove;
+		int newYPos = thymioY + yMove;
+		
+		if(thymioX == -1 || thymioY == -1){
+			uiErrorMessage = "UI-Fehler: \n Thymio wurde noch nicht gesetzt";
+			return false;
+		}
+		
+		if(newXPos < 0 || newXPos > xAxis || newYPos < 0 || newYPos > yAxis){
+			uiErrorMessage = "UI-Fehler: \n Thymio darf sich nicht auﬂerhalb des Feldes bewegen";
+			return false;
+		}
+		
+		for(int i = 0; i < blocked.size(); i++){
+			boolean isBlockedX = false;
+			if(blocked.get(i)[0] == newXPos){
+				isBlockedX = true;
+			}
+			boolean isBlockedY = false;
+			if(blocked.get(i)[1] == newYPos){
+				isBlockedY = true;
+			}
+			
+			if(isBlockedX && isBlockedY){
+				uiErrorMessage = "UI-Fehler: \n Das Feld ist blockiert";
+				return false;
+			}
+		}
+		
+		uiErrorMessage = "UI: Bewegung im UI mˆglich!";
+		return true;
+		
 	}
 
 	private Dimension getDimension() {
