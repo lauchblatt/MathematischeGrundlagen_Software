@@ -118,9 +118,6 @@ public class PrologInterface implements ActionListener {
 	public void start(int xAxis, int yAxis, Point loc) {
 		this.xAxis = xAxis;
 		this.yAxis = yAxis;
-		
-		jpl.setFieldLengthX(xAxis);
-		jpl.setFieldLengthY(yAxis);
 
 		buttons = new JButton[xAxis][yAxis];
 		freeMap = new int[xAxis][yAxis];
@@ -306,8 +303,6 @@ public class PrologInterface implements ActionListener {
 
 	private void updateFacts() {
 		
-		jpl.resetBlocked();
-		
 		freeString = "";
 		//blockedString = "";
 
@@ -321,7 +316,6 @@ public class PrologInterface implements ActionListener {
 					
 					//Set Model blocked
 					int[] blocked = new int[]{i, k};
-					jpl.addToBlocked(blocked);
 					
 				}
 				count++;
