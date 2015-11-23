@@ -7,6 +7,7 @@ import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -94,6 +95,10 @@ public class PrologInterface implements ActionListener {
 	
 	private JPLInterface jpl;
 	private ClauseProcessor cp;
+	
+	private ArrayList<int[]> blocked;
+	private int thymioX;
+	private int thymioY;
 
 	public PrologInterface() {
 		initWindow();
@@ -112,6 +117,9 @@ public class PrologInterface implements ActionListener {
 		
 		
 		cp = new ClauseProcessor();
+		
+		thymioX = -1;
+		thymioY = -1;
 		
 	}
 
@@ -303,6 +311,9 @@ public class PrologInterface implements ActionListener {
 
 	private void updateFacts() {
 		
+		blocked = new ArrayList<int[]>();
+		resetBlocked();
+		
 		freeString = "";
 		//blockedString = "";
 
@@ -315,7 +326,8 @@ public class PrologInterface implements ActionListener {
 					//blockedString += "blocked(f" + count + ").\n";
 					
 					//Set Model blocked
-					int[] blocked = new int[]{i, k};
+					int[] blockedElement = new int[]{i, k};
+					addToBlocked(blockedElement);
 					
 				}
 				count++;
@@ -327,6 +339,33 @@ public class PrologInterface implements ActionListener {
 				+ thymioString + goalString + obstacleString);
 		jpl.updateFacts(facts.getText());
 		jpl.test();
+		testModel();
+	}
+	
+	private void testModel(){
+		System.out.println("X-Achse: " + xAxis);
+		System.out.println("Y-Achse: " + yAxis);
+		System.out.println("ThymioX: " + thymioX);
+		System.out.println("ThymioY: " + thymioY);
+		
+		for(int i = 0; i < blocked.size(); i++){
+			System.out.println("Blocked: (" + blocked.get(i)[0] + ", " + blocked.get(i)[1] + ")");
+		}
+	}
+	
+	private void addToBlocked(int[] blockedField){
+		blocked.add(blockedField);
+		
+		System.out.println("##### blocked");
+		for(int i = 0; i < blocked.size(); i++){
+			for(int j = 0; j < blocked.get(i).length; j++){
+				System.out.println(blocked.get(i)[j]);
+			}
+		}
+	}
+	
+	public void resetBlocked(){
+		blocked.clear();
 	}
 
 	private Dimension getDimension() {
@@ -641,6 +680,8 @@ public class PrologInterface implements ActionListener {
 						gb.setToolTipText(type);
 						gb.setIcon(new ImageIcon(type));
 						generateThymioFact(1, row, col);
+						thymioX = row;
+						thymioY = col;
 						freeMap[row][col] *= -1;
 						updateFacts();
 					} else if (!goalOnField
@@ -662,6 +703,8 @@ public class PrologInterface implements ActionListener {
 						gb.setIcon(null);
 						freeMap[row][col] *= -1;
 						generateThymioFact(0, row, col);
+						thymioX = -1;
+						thymioY = -1;
 						updateFacts();
 						thymioOnField = false;
 					} else if (type.equals("resources/finish.png")) {
