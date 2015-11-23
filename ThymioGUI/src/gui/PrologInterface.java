@@ -54,6 +54,7 @@ public class PrologInterface implements ActionListener {
 	private JButton addRule;
 
 	private JTextPane facts;
+	private JTextPane mapAnswer;
 
 	private int xAxis;
 	private int yAxis;
@@ -498,9 +499,30 @@ public class PrologInterface implements ActionListener {
 		mapPanel.setLayout(new BoxLayout(mapPanel, BoxLayout.Y_AXIS));
 		mapPanel.add(map());
 		mapPanel.add(controls());
-
+		
+		mapPanel.add(mapAnswer());
+		
 		mapPanel.setBorder(BorderFactory.createEmptyBorder(0, 50, 0, 50));
 		return mapPanel;
+	}
+
+	private JPanel mapAnswer() {
+		JPanel mapAnswerPanel = new JPanel();
+		mapAnswerPanel.setLayout(new BoxLayout(mapAnswerPanel, BoxLayout.X_AXIS));
+		
+		JLabel mapAnswerHint = new JLabel("Status: ");
+		mapAnswerHint.setAlignmentX(Component.CENTER_ALIGNMENT);
+		
+		mapAnswer = new JTextPane();
+		mapAnswer.setMaximumSize(new Dimension(400, 35));
+		mapAnswer.setAlignmentX(Component.CENTER_ALIGNMENT);
+		mapAnswer.setBackground(new Color(0xeeeeee));
+		
+		mapAnswerPanel.add(mapAnswerHint);
+		mapAnswerPanel.add(mapAnswer);
+		
+		mapAnswerPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		return mapAnswerPanel;
 	}
 
 	private JPanel controls() {
