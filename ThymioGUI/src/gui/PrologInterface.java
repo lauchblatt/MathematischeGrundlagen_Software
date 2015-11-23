@@ -101,7 +101,7 @@ public class PrologInterface implements ActionListener {
 	private int thymioX;
 	private int thymioY;
 	
-	String uiErrorMessage = "";
+	private String uiErrorMessage = "";
 
 	public PrologInterface() {
 		initWindow();
@@ -180,6 +180,8 @@ public class PrologInterface implements ActionListener {
 
 		customizeButtons();
 
+		setListenerMovementButtons();
+		
 		lrPanel.add(leftButton);
 		lrPanel.add(sep);
 		lrPanel.add(rightButton);
@@ -238,6 +240,71 @@ public class PrologInterface implements ActionListener {
 		
 		
 		return control;
+	}
+	
+	private void setListenerMovementButtons(){
+		
+		
+		fwButton.addActionListener(new ActionListener(){
+			Color green = new Color(0, 255, 0);
+			Color red = new Color(255, 0, 0);
+			
+			public void actionPerformed(ActionEvent e) {
+				mapAnswer.setForeground(red);
+				
+				if(testMovementInUI(-1,0)){
+					mapAnswer.setForeground(green);
+				}
+				mapAnswer.setText(uiErrorMessage);
+			}
+		});
+		
+		bwButton.addActionListener(new ActionListener(){
+			Color green = new Color(0, 255, 0);
+			Color red = new Color(255, 0, 0);
+			
+			public void actionPerformed(ActionEvent e) {
+				
+				mapAnswer.setForeground(red);
+				
+				if(testMovementInUI(1,0)){
+					mapAnswer.setForeground(green);
+				}
+				mapAnswer.setText(uiErrorMessage);
+			}
+		});
+		
+		leftButton.addActionListener(new ActionListener(){
+			Color green = new Color(0, 255, 0);
+			Color red = new Color(255, 0, 0);
+			
+			public void actionPerformed(ActionEvent e) {
+				
+				mapAnswer.setForeground(red);
+				
+				if(testMovementInUI(0,-1)){
+					mapAnswer.setForeground(green);
+				}
+				mapAnswer.setText(uiErrorMessage);
+			}
+		});
+		
+		rightButton.addActionListener(new ActionListener(){
+			Color green = new Color(0, 255, 0);
+			Color red = new Color(255, 0, 0);
+			
+			public void actionPerformed(ActionEvent e) {
+				
+				mapAnswer.setForeground(red);
+				
+				if(testMovementInUI(0,1)){
+					mapAnswer.setForeground(green);
+					System.out.println("TEXT AUF GR‹N GESETZT");
+				}
+				mapAnswer.setText(uiErrorMessage);
+			}
+		});
+		
 	}
 
 	private void setListenerForRequest() {
@@ -359,13 +426,6 @@ public class PrologInterface implements ActionListener {
 	
 	private void addToBlocked(int[] blockedField){
 		blocked.add(blockedField);
-		
-		System.out.println("##### blocked");
-		for(int i = 0; i < blocked.size(); i++){
-			for(int j = 0; j < blocked.get(i).length; j++){
-				System.out.println(blocked.get(i)[j]);
-			}
-		}
 	}
 	
 	private void resetBlocked(){
@@ -384,7 +444,8 @@ public class PrologInterface implements ActionListener {
 			return false;
 		}
 		
-		if(newXPos < 0 || newXPos > xAxis || newYPos < 0 || newYPos > yAxis){
+		if(newXPos < 0 || newXPos >= xAxis || newYPos < 0 || newYPos >= yAxis){
+			
 			uiErrorMessage = "UI-Fehler: \n Thymio darf sich nicht auﬂerhalb des Feldes bewegen";
 			return false;
 		}
