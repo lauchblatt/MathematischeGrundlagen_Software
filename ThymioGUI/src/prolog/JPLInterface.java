@@ -15,11 +15,22 @@ public class JPLInterface {
 	private ArrayList<String> facts;
 	private ArrayList<String> rules;
 	private String currentRequestError;
+	private String currentMovementError;
+	private boolean currentMovementPossibleProlog;
+	private boolean currentMovementPossibleUi;
+	
+	private int fieldLengthX;
+	private int fieldLengthY;
+	private int thymioX;
+	private int thymioY;
+	private ArrayList<int[]> blocked;
 	
 	public JPLInterface(){
 		facts = new ArrayList<String>();
 		rules = new ArrayList<String>();
 		currentRequestError = "";
+		currentMovementError = "";
+		blocked = new ArrayList<int[]>();
 		resetAll();	
 	}
 	
@@ -48,6 +59,59 @@ public class JPLInterface {
 	public void removeRuleByIndex(int index){
 		retractClause(rules.get(index));
 		rules.remove(index);
+	}
+	
+	public void checkMovementLeft(){
+		currentMovementError = "";
+		
+		String request = "poss(left(thymio))";
+		
+	}
+	
+	public void checkMovementRight(){
+		currentMovementError = "";
+		
+		String request = "poss(right(thymio))";
+		
+		try {
+			if(queryClause(request)){
+				setCurrentMovementPossibleProlog(true);
+				
+			} else{
+				setCurrentMovementPossibleProlog(false);
+			}
+		} catch(Exception e){
+			
+		}
+		
+	}
+	
+	public void checkMovementUp(){
+		currentMovementError = "";
+		
+		String request = "poss(up(thymio))";
+		
+	}
+	
+	public void checkMovementDown(){
+		currentMovementError = "";
+		
+		String request = "poss(down(thymio))";
+		
+	}
+	
+	private void checkMovementUi(int moveX, int moveY){
+		int newPosX = thymioX + moveX;
+		int newPosY = thymioY + moveY;
+		if(newPosX >= fieldLengthX || newPosX < 0 || newPosY >= fieldLengthY || newPosY < 0){
+			if(checkOnBlocked(newPosX, newPosY)){
+				
+			}
+		}
+	}
+	
+	private boolean checkOnBlocked(int x, int y){
+		return false;
 	}
 	
 	public void updateFacts(String text){
@@ -162,4 +226,81 @@ public class JPLInterface {
 		this.currentRequestError = currentRequestError;
 	}
 
+	public boolean isCurrentMovementPossibleProlog() {
+		return currentMovementPossibleProlog;
+	}
+
+	public void setCurrentMovementPossibleProlog(
+			boolean currentMovementPossibleProlog) {
+		this.currentMovementPossibleProlog = currentMovementPossibleProlog;
+	}
+
+	public boolean isCurrentMovementPossibleUi() {
+		return currentMovementPossibleUi;
+	}
+
+	public void setCurrentMovementPossibleUi(boolean currentMovementPossibleUi) {
+		this.currentMovementPossibleUi = currentMovementPossibleUi;
+	}
+	
+	public void addToBlocked(int[] blockedField){
+		blocked.add(blockedField);
+		
+		System.out.println("##### blocked");
+		for(int i = 0; i < blocked.size(); i++){
+			for(int j = 0; j < blocked.get(i).length; j++){
+				System.out.println(blocked.get(i)[j]);
+			}
+		}
+	}
+	
+	public void resetBlocked(){
+		blocked.clear();
+	}
+
+
+	public int getFieldLengthX() {
+		return fieldLengthX;
+	}
+
+
+	public void setFieldLengthX(int fieldLengthX) {
+		this.fieldLengthX = fieldLengthX;
+	}
+
+
+	public int getFieldLengthY() {
+		return fieldLengthY;
+	}
+
+
+	public void setFieldLengthY(int fieldLengthY) {
+		this.fieldLengthY = fieldLengthY;
+	}
+
+
+	public ArrayList<int[]> getBlocked() {
+		return blocked;
+	}
+
+
+	public void setBlocked(ArrayList<int[]> blocked) {
+		this.blocked = blocked;
+	}
+
+	public int getThymioX() {
+		return thymioX;
+	}
+
+	public void setThymioX(int thymioX) {
+		this.thymioX = thymioX;
+	}
+
+	public int getThymioY() {
+		return thymioY;
+	}
+
+	public void setThymioY(int thymioY) {
+		this.thymioY = thymioY;
+	}
 }

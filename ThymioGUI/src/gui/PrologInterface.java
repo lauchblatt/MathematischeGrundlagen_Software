@@ -31,7 +31,6 @@ import javax.swing.tree.TreePath;
 import org.jpl7.Term;
 
 import parser.ClauseProcessor;
-import prolog.GuiModel;
 import prolog.JPLInterface;
 
 public class PrologInterface implements ActionListener {
@@ -95,13 +94,13 @@ public class PrologInterface implements ActionListener {
 	
 	private JPLInterface jpl;
 	private ClauseProcessor cp;
-	private GuiModel guiModel;
 
 	public PrologInterface() {
 		initWindow();
 	}
 
 	private void initWindow() {
+		jpl = new JPLInterface();
 		window = new JFrame();
 		window.setBounds(30, 30, WINDOW_WIDTH, WINDOW_HEIGHT);
 		window.setTitle("Thymio / Prolog Interface - Universität Regensburg");
@@ -111,7 +110,7 @@ public class PrologInterface implements ActionListener {
 		windowPanel.setLayout(new BoxLayout(windowPanel, BoxLayout.X_AXIS));
 		window.setVisible(false);
 		
-		jpl = new JPLInterface();
+		
 		cp = new ClauseProcessor();
 		
 	}
@@ -120,7 +119,8 @@ public class PrologInterface implements ActionListener {
 		this.xAxis = xAxis;
 		this.yAxis = yAxis;
 		
-		guiModel = new GuiModel(xAxis, yAxis);
+		jpl.setFieldLengthX(xAxis);
+		jpl.setFieldLengthY(yAxis);
 
 		buttons = new JButton[xAxis][yAxis];
 		freeMap = new int[xAxis][yAxis];
@@ -306,7 +306,7 @@ public class PrologInterface implements ActionListener {
 
 	private void updateFacts() {
 		
-		guiModel.resetBlocked();
+		jpl.resetBlocked();
 		
 		freeString = "";
 		//blockedString = "";
@@ -321,7 +321,7 @@ public class PrologInterface implements ActionListener {
 					
 					//Set Model blocked
 					int[] blocked = new int[]{i, k};
-					guiModel.addToBlocked(blocked);
+					jpl.addToBlocked(blocked);
 					
 				}
 				count++;
