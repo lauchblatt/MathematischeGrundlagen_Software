@@ -7,6 +7,8 @@ import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Map;
 
 import javax.swing.BorderFactory;
@@ -94,12 +96,19 @@ public class PrologInterface implements ActionListener {
 	
 	private JPLInterface jpl;
 	private ClauseProcessor cp;
+	
+	private ArrayList<int[]> blocked;
+	private int thymioX;
+	private int thymioY;
+	
+	String uiErrorMessage = "";
 
 	public PrologInterface() {
 		initWindow();
 	}
 
 	private void initWindow() {
+		jpl = new JPLInterface();
 		window = new JFrame();
 		window.setBounds(30, 30, WINDOW_WIDTH, WINDOW_HEIGHT);
 		window.setTitle("Thymio / Prolog Interface - Universit√§t Regensburg");
@@ -109,8 +118,12 @@ public class PrologInterface implements ActionListener {
 		windowPanel.setLayout(new BoxLayout(windowPanel, BoxLayout.X_AXIS));
 		window.setVisible(false);
 		
-		jpl = new JPLInterface();
+		
 		cp = new ClauseProcessor();
+		
+		thymioX = -1;
+		thymioY = -1;
+		
 	}
 
 	public void start(int xAxis, int yAxis, Point loc) {
@@ -132,6 +145,8 @@ public class PrologInterface implements ActionListener {
 		initEventListeners();
 		initTreeListener();
 		window.setVisible(true);
+		
+		
 
 	}
 
@@ -184,7 +199,7 @@ public class PrologInterface implements ActionListener {
 		requestButton = new JButton("Send Request");
 		requestButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 		requestAnswer = new JTextPane();
-		requestAnswer.setMaximumSize(new Dimension(400, 35));
+		requestAnswer.setMaximumSize(new Dimension(400, 200));
 		requestAnswer.setAlignmentX(Component.CENTER_ALIGNMENT);
 		requestAnswer.setBackground(new Color(0xeeeeee));
 		
@@ -239,11 +254,29 @@ public class PrologInterface implements ActionListener {
 					boolean hasSolution = jpl.queryClause(requestField.getText());
 					if(hasSolution){
 						
-						System.out.println("hat LÔøΩsung");
+						String answer = "TRUE";
+						
+						Color green = new Color(0, 255, 0);
+						requestAnswer.setForeground(green);
+						
 						// ... if yes ask for all solutions
 						Map<String, Term>[] solutions = jpl.request(requestField.getText());
+						
+						for(int i = 0; i < solutions.length; i++){
+							Iterator it = solutions[i].entrySet().iterator();
+							answer = answer + "\n " + (i+1) + ". Lˆsung: ";
+							while(it.hasNext()){
+								Map.Entry pair = (Map.Entry)it.next();
+								answer = answer + pair.getKey() + " = " + pair.getValue() + " ";
+						        it.remove();			}
+						}
+						
+						requestAnswer.setText(answer);
+						
 					}else{
-						System.out.println("hat keine LÔøΩsung");
+						Color red = new Color(255, 0, 0);
+						requestAnswer.setForeground(red);
+						requestAnswer.setText("FALSE -->" + jpl.getCurrentRequestError());
 					}
 					
 				}
@@ -280,6 +313,10 @@ public class PrologInterface implements ActionListener {
 	}
 
 	private void updateFacts() {
+		
+		blocked = new ArrayList<int[]>();
+		resetBlocked();
+		
 		freeString = "";
 		//blockedString = "";
 
@@ -290,6 +327,11 @@ public class PrologInterface implements ActionListener {
 					freeString += "free(f" + count + ").\n";
 				} else if (freeMap[i][k] == count * -1) {
 					//blockedString += "blocked(f" + count + ").\n";
+					
+					//Set Model blocked
+					int[] blockedElement = new int[]{i, k};
+					addToBlocked(blockedElement);
+					
 				}
 				count++;
 			}
@@ -300,6 +342,72 @@ public class PrologInterface implements ActionListener {
 				+ thymioString + goalString + obstacleString);
 		jpl.updateFacts(facts.getText());
 		jpl.test();
+		
+		testModel();
+	}
+	
+	private void testModel(){
+		System.out.println("X-Achse: " + xAxis);
+		System.out.println("Y-Achse: " + yAxis);
+		System.out.println("ThymioX: " + thymioX);
+		System.out.println("ThymioY: " + thymioY);
+		
+		for(int i = 0; i < blocked.size(); i++){
+			System.out.println("Blocked: (" + blocked.get(i)[0] + ", " + blocked.get(i)[1] + ")");
+		}
+	}
+	
+	private void addToBlocked(int[] blockedField){
+		blocked.add(blockedField);
+		
+		System.out.println("##### blocked");
+		for(int i = 0; i < blocked.size(); i++){
+			for(int j = 0; j < blocked.get(i).length; j++){
+				System.out.println(blocked.get(i)[j]);
+			}
+		}
+	}
+	
+	private void resetBlocked(){
+		blocked.clear();
+	}
+	
+	private boolean testMovementInUI(int xMove, int yMove){
+		
+		uiErrorMessage = "";
+		
+		int newXPos = thymioX + xMove;
+		int newYPos = thymioY + yMove;
+		
+		if(thymioX == -1 || thymioY == -1){
+			uiErrorMessage = "UI-Fehler: \n Thymio wurde noch nicht gesetzt";
+			return false;
+		}
+		
+		if(newXPos < 0 || newXPos > xAxis || newYPos < 0 || newYPos > yAxis){
+			uiErrorMessage = "UI-Fehler: \n Thymio darf sich nicht auﬂerhalb des Feldes bewegen";
+			return false;
+		}
+		
+		for(int i = 0; i < blocked.size(); i++){
+			boolean isBlockedX = false;
+			if(blocked.get(i)[0] == newXPos){
+				isBlockedX = true;
+			}
+			boolean isBlockedY = false;
+			if(blocked.get(i)[1] == newYPos){
+				isBlockedY = true;
+			}
+			
+			if(isBlockedX && isBlockedY){
+				uiErrorMessage = "UI-Fehler: \n Das Feld ist blockiert";
+				return false;
+			}
+		}
+		
+		uiErrorMessage = "UI: Bewegung im UI mˆglich!";
+		return true;
+		
 	}
 
 	private Dimension getDimension() {
@@ -635,6 +743,8 @@ public class PrologInterface implements ActionListener {
 						gb.setToolTipText(type);
 						gb.setIcon(new ImageIcon(type));
 						generateThymioFact(1, row, col);
+						thymioX = row;
+						thymioY = col;
 						freeMap[row][col] *= -1;
 						updateFacts();
 					} else if (!goalOnField
@@ -656,6 +766,8 @@ public class PrologInterface implements ActionListener {
 						gb.setIcon(null);
 						freeMap[row][col] *= -1;
 						generateThymioFact(0, row, col);
+						thymioX = -1;
+						thymioY = -1;
 						updateFacts();
 						thymioOnField = false;
 					} else if (type.equals("resources/finish.png")) {
