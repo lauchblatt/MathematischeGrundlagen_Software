@@ -244,30 +244,41 @@ public class PrologInterface implements ActionListener {
 	
 	private void setListenerMovementButtons(){
 		
+		//Pfeiltasten werden gedrückt
 		
 		fwButton.addActionListener(new ActionListener(){
 			Color green = new Color(0, 255, 0);
 			Color red = new Color(255, 0, 0);
+			boolean uiMove = false;
+			boolean prologMove = false;
 			
 			public void actionPerformed(ActionEvent e) {
 				mapAnswer.setForeground(red);
 				
 				if(testMovementInUI(-1,0)){
 					mapAnswer.setForeground(green);
+					uiMove = true;
 				}
 				mapAnswer.setText(uiErrorMessage);
 				
 				arrowAnswer.setForeground(red);
 				if(jpl.checkMovement("up")){
 					arrowAnswer.setForeground(green);
+					prologMove = true;
 				}
 				arrowAnswer.setText(jpl.getCurrentMovementError());
+				
+				if(uiMove && prologMove){
+					//#TODO Movement up
+				}
 			}
 		});
 		
 		bwButton.addActionListener(new ActionListener(){
 			Color green = new Color(0, 255, 0);
 			Color red = new Color(255, 0, 0);
+			boolean uiMove = false;
+			boolean prologMove = false;
 			
 			public void actionPerformed(ActionEvent e) {
 				
@@ -275,20 +286,28 @@ public class PrologInterface implements ActionListener {
 				
 				if(testMovementInUI(1,0)){
 					mapAnswer.setForeground(green);
+					uiMove = true;
 				}
 				mapAnswer.setText(uiErrorMessage);
 				
 				arrowAnswer.setForeground(red);
 				if(jpl.checkMovement("down")){
 					arrowAnswer.setForeground(green);
+					prologMove = true;
 				}
 				arrowAnswer.setText(jpl.getCurrentMovementError());
+				
+				if(uiMove && prologMove){
+					//#TODO Movement down
+				}
 			}
 		});
 		
 		leftButton.addActionListener(new ActionListener(){
 			Color green = new Color(0, 255, 0);
 			Color red = new Color(255, 0, 0);
+			boolean uiMove = false;
+			boolean prologMove = false;
 			
 			public void actionPerformed(ActionEvent e) {
 				
@@ -296,20 +315,28 @@ public class PrologInterface implements ActionListener {
 				
 				if(testMovementInUI(0,-1)){
 					mapAnswer.setForeground(green);
+					uiMove = true;
 				}
 				mapAnswer.setText(uiErrorMessage);
 				
 				arrowAnswer.setForeground(red);
 				if(jpl.checkMovement("left")){
 					arrowAnswer.setForeground(green);
+					prologMove = true;
 				}
 				arrowAnswer.setText(jpl.getCurrentMovementError());
+				
+				if(uiMove && prologMove){
+					//#TODO Movement left
+				}
 			}
 		});
 		
 		rightButton.addActionListener(new ActionListener(){
 			Color green = new Color(0, 255, 0);
 			Color red = new Color(255, 0, 0);
+			boolean uiMove = false;
+			boolean prologMove = false;
 			
 			public void actionPerformed(ActionEvent e) {
 				
@@ -317,15 +344,20 @@ public class PrologInterface implements ActionListener {
 				
 				if(testMovementInUI(0,1)){
 					mapAnswer.setForeground(green);
-					System.out.println("TEXT AUF GRÜN GESETZT");
+					uiMove = true;
 				}
 				mapAnswer.setText(uiErrorMessage);
 				
 				arrowAnswer.setForeground(red);
 				if(jpl.checkMovement("right")){
 					arrowAnswer.setForeground(green);
+					prologMove = true;
 				}
 				arrowAnswer.setText(jpl.getCurrentMovementError());
+				
+				if(uiMove && prologMove){
+					//#TODO Movement left
+				}
 			}
 		});
 		
@@ -432,20 +464,7 @@ public class PrologInterface implements ActionListener {
 				//+ blockedString 
 				+ thymioString + goalString + obstacleString);
 		jpl.updateFacts(facts.getText());
-		jpl.test();
 		
-		testModel();
-	}
-	
-	private void testModel(){
-		System.out.println("X-Achse: " + xAxis);
-		System.out.println("Y-Achse: " + yAxis);
-		System.out.println("ThymioX: " + thymioX);
-		System.out.println("ThymioY: " + thymioY);
-		
-		for(int i = 0; i < blocked.size(); i++){
-			System.out.println("Blocked: (" + blocked.get(i)[0] + ", " + blocked.get(i)[1] + ")");
-		}
 	}
 	
 	private void addToBlocked(int[] blockedField){
