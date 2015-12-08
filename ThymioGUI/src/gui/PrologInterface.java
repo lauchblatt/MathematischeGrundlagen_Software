@@ -256,6 +256,12 @@ public class PrologInterface implements ActionListener {
 					mapAnswer.setForeground(green);
 				}
 				mapAnswer.setText(uiErrorMessage);
+				
+				arrowAnswer.setForeground(red);
+				if(jpl.checkMovement("up")){
+					arrowAnswer.setForeground(green);
+				}
+				arrowAnswer.setText(jpl.getCurrentMovementError());
 			}
 		});
 		
@@ -271,6 +277,12 @@ public class PrologInterface implements ActionListener {
 					mapAnswer.setForeground(green);
 				}
 				mapAnswer.setText(uiErrorMessage);
+				
+				arrowAnswer.setForeground(red);
+				if(jpl.checkMovement("down")){
+					arrowAnswer.setForeground(green);
+				}
+				arrowAnswer.setText(jpl.getCurrentMovementError());
 			}
 		});
 		
@@ -286,6 +298,12 @@ public class PrologInterface implements ActionListener {
 					mapAnswer.setForeground(green);
 				}
 				mapAnswer.setText(uiErrorMessage);
+				
+				arrowAnswer.setForeground(red);
+				if(jpl.checkMovement("left")){
+					arrowAnswer.setForeground(green);
+				}
+				arrowAnswer.setText(jpl.getCurrentMovementError());
 			}
 		});
 		
@@ -302,6 +320,12 @@ public class PrologInterface implements ActionListener {
 					System.out.println("TEXT AUF GRÜN GESETZT");
 				}
 				mapAnswer.setText(uiErrorMessage);
+				
+				arrowAnswer.setForeground(red);
+				if(jpl.checkMovement("right")){
+					arrowAnswer.setForeground(green);
+				}
+				arrowAnswer.setText(jpl.getCurrentMovementError());
 			}
 		});
 		
@@ -368,7 +392,7 @@ public class PrologInterface implements ActionListener {
 		int count = 1;
 		for (int i = 0; i < xAxis; i++) {
 			for (int k = 0; k < yAxis; k++) {
-				positionsString += "pos(f" + count + ",(" + i + "," + k
+				positionsString += "position(f" + count + ",(" + i + "," + k
 						+ ")).\n";
 				
 				freeMap[i][k] = count;
@@ -852,7 +876,7 @@ public class PrologInterface implements ActionListener {
 	protected void generateObstacleString(int i, int row, int col) {
 		if (i == 1) {
 			obstacleString += "obstacle(o" + obstacleCounter + ")." + "\n"
-					+ "pos(o" + obstacleCounter + ",(" + row + "," + col
+					+ "position(o" + obstacleCounter + ",(" + row + "," + col
 					+ ")).\n";
 			obstacleCounter++;
 		} else {
@@ -876,7 +900,7 @@ public class PrologInterface implements ActionListener {
 
 	protected void generateGoalFact(int i, int row, int col) {
 		if (i == 1) {
-			goalString = "goal(z)." + "\n" + "pos(z,(" + row + "," + col
+			goalString = "goal(z)." + "\n" + "position(z,(" + row + "," + col
 					+ ")).\n";
 		} else {
 			goalString = "";
@@ -885,8 +909,8 @@ public class PrologInterface implements ActionListener {
 
 	protected void generateThymioFact(int i, int row, int col) {
 		if (i == 1) {
-			thymioString = "thymio(t)." + "\n" + "pos(t,(" + row + "," + col
-					+ ")).\n";
+			thymioString = "thymio(t)." + "\n" + "position(t,(" + row + "," + col
+					+ "),s0).\n";
 		} else {
 			thymioString = "";
 		}

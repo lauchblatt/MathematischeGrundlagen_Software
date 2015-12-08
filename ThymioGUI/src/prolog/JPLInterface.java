@@ -25,12 +25,16 @@ public class JPLInterface {
 	private int thymioY;
 	private ArrayList<int[]> blocked;
 	
+	private String currentSituation;
+	private String nextSituation;
+	
 	public JPLInterface(){
 		facts = new ArrayList<String>();
 		rules = new ArrayList<String>();
 		currentRequestError = "";
-		currentMovementError = "";
+		setCurrentMovementError("");
 		blocked = new ArrayList<int[]>();
+		currentSituation = "s0";
 		resetAll();	
 	}
 	
@@ -42,6 +46,7 @@ public class JPLInterface {
 		for(int i = 0; i < rules.size(); i++){
 			System.out.println(rules.get(i));
 		}
+		System.out.println("Situation " + currentSituation);
 	}
 	
 	public void resetAll(){
@@ -61,53 +66,37 @@ public class JPLInterface {
 		rules.remove(index);
 	}
 	
-	public void checkMovementLeft(){
-		currentMovementError = "";
-		
-		String request = "poss(left(thymio))";
+	private void setNextSituation (String movement){
+
+		currentSituation = "do(" + movement + "(t)," + currentSituation + ")";
 		
 	}
 	
-	public void checkMovementRight(){
+	private String getPossQuery (String movement){
+		String possQuery = "poss(" + movement + "(t)," + currentSituation + ")";
+		return possQuery;
+	}
+	
+	public boolean checkMovement (String movement){
 		currentMovementError = "";
 		
-		String request = "poss(right(thymio))";
-		
+		String possQuery = getPossQuery(movement);
+		System.out.println(possQuery);
+		boolean possible = false;
 		try {
-			if(queryClause(request)){
-				setCurrentMovementPossibleProlog(true);
-				
-			} else{
-				setCurrentMovementPossibleProlog(false);
-			}
-		} catch(Exception e){
+			Query q = new Query(possQuery);
+			possible = q.hasSolution();
+		} catch (Exception e){
+			//If poss is not even defined
+		}
+		if(!possible){
 			
+			currentMovementError = "FALSE";
+		}else{
+			setNextSituation(movement);
+			currentMovementError = "TRUE";
 		}
-		
-	}
-	
-	public void checkMovementUp(){
-		currentMovementError = "";
-		
-		String request = "poss(up(thymio))";
-		
-	}
-	
-	public void checkMovementDown(){
-		currentMovementError = "";
-		
-		String request = "poss(down(thymio))";
-		
-	}
-	
-	private void checkMovementUi(int moveX, int moveY){
-		int newPosX = thymioX + moveX;
-		int newPosY = thymioY + moveY;
-		if(newPosX >= fieldLengthX || newPosX < 0 || newPosY >= fieldLengthY || newPosY < 0){
-			if(checkOnBlocked(newPosX, newPosY)){
-				
-			}
-		}
+		return possible;
 	}
 	
 	private boolean checkOnBlocked(int x, int y){
@@ -152,7 +141,7 @@ public class JPLInterface {
 	}
 	
 	private String buildRetractQuery(String clause){
-		String retractQuery = "retract(" + clause +")";
+		String retractQuery = "retract((" + clause +"))";
 		return retractQuery;
 	}
 	
@@ -206,7 +195,8 @@ public class JPLInterface {
 	}
 	
 	private String buildAssertQuery(String clause){
-		String assertQuery = "assert(" + clause + ")";
+		String assertQuery = "assert((" + clause + "))";
+		System.out.println(assertQuery);
 		return assertQuery;
 	}
 	
@@ -302,5 +292,13 @@ public class JPLInterface {
 
 	public void setThymioY(int thymioY) {
 		this.thymioY = thymioY;
+	}
+
+	public String getCurrentMovementError() {
+		return currentMovementError;
+	}
+
+	public void setCurrentMovementError(String currentMovementError) {
+		this.currentMovementError = currentMovementError;
 	}
 }
