@@ -281,6 +281,8 @@ public class PrologInterface implements ActionListener {
 					oldField.setIcon(null);
 					nextField.setIcon(new ImageIcon("resources/thymio.png"));
 					
+					jpl.addToFluents(thymioX-1, thymioY);
+					
 					thymioX = thymioX-1;		
 				}
 			}
@@ -318,6 +320,8 @@ public class PrologInterface implements ActionListener {
 					JButton nextField = PrologInterface.this.getGridButton(thymioX+1, thymioY);
 					oldField.setIcon(null);
 					nextField.setIcon(new ImageIcon("resources/thymio.png"));
+					
+					jpl.addToFluents(thymioX+1, thymioY);
 					thymioX = thymioX+1;
 				}
 			}
@@ -353,6 +357,7 @@ public class PrologInterface implements ActionListener {
 					JButton nextField = PrologInterface.this.getGridButton(thymioX, thymioY-1);
 					oldField.setIcon(null);
 					nextField.setIcon(new ImageIcon("resources/thymio.png"));
+					jpl.addToFluents(thymioX, thymioY-1);
 					thymioY = thymioY-1;
 				}
 			}
@@ -389,6 +394,7 @@ public class PrologInterface implements ActionListener {
 					JButton nextField = PrologInterface.this.getGridButton(thymioX, thymioY+1);
 					oldField.setIcon(null);
 					nextField.setIcon(new ImageIcon("resources/thymio.png"));
+					jpl.addToFluents(thymioX, thymioY+1);
 					thymioY = thymioY+1;
 				}
 			}

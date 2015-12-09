@@ -29,8 +29,12 @@ public class JPLInterface {
 	private String nextSituation;
 	private String eol;
 	
+	private ArrayList<String> fluents;
+	
 	public JPLInterface(){
 		eol = System.getProperty("line.separator");
+		
+		fluents = new ArrayList<String>();
 		facts = new ArrayList<String>();
 		rules = new ArrayList<String>();
 		currentRequestError = "";
@@ -81,7 +85,7 @@ public class JPLInterface {
 	
 	private void setNextSituation (String movement){
 
-		currentSituation = "do(" + movement + "(t)," + currentSituation + ")";
+		nextSituation = "do(" + movement + "(t)," + currentSituation + ")";
 		
 	}
 	
@@ -107,26 +111,36 @@ public class JPLInterface {
 		if(!possible){		
 			currentMovementError = eol + "FALSE: " + possQuery + " kann nicht inferiert werden.";
 		}else{
-			setNextSituation(movement);
 			currentMovementError = eol + "TRUE: " + possQuery + " kann inferiert werden.";
-			positionIsCorrect = checkNewPosition(newX,newY);
+			setNextSituation(movement);
+			
+			positionIsCorrect = checkNewPosition(newX, newY);
+			
+			if(positionIsCorrect){
+				currentSituation = nextSituation;
+			}
 		}
 
 		return (possible && positionIsCorrect);
 	}
 	
 	private boolean checkNewPosition(int posX, int posY){
-		String positionString = "position(t,(" + posX + "," + posY + ")," + currentSituation + ")";
-		Query q = new Query("position(t,(" + posX + "," + posY + ")," + currentSituation + ")");
+		String positionString = "position(t,(" + posX + "," + posY + ")," + nextSituation + ")";
+		Query q = new Query("position(t,(" + posX + "," + posY + ")," + nextSituation + ")");
 		
+		System.out.println("positionString" + positionString);
 		if(q.hasSolution()){
 			currentMovementError = currentMovementError + eol + "TRUE: " + positionString + " kann inferiert werden.";
-			System.out.println(currentMovementError);
 			return true;
 		}else{
 			currentMovementError = currentMovementError + eol + "FALSE: " + positionString + " kann nicht inferiert werden.";
 			return false;
 		}
+	}
+	
+	public void addToFluents(int posX, int posY){
+		String positionString = "position(t,(" + posX + "," + posY + ")," + currentSituation + ")";
+		fluents.add(positionString);
 	}
 	
 	public void updateFacts(String text){
