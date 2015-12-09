@@ -36,6 +36,7 @@ public class JPLInterface {
 		blocked = new ArrayList<int[]>();
 		currentSituation = "s0";
 		resetAll();	
+		assertCorrectSolution();
 	}
 	
 	public void test(){
@@ -47,6 +48,16 @@ public class JPLInterface {
 			System.out.println(rules.get(i));
 		}
 		System.out.println("Situation " + currentSituation);
+	}
+	
+	//Test Method that asserts the correct Solution in the Beginning
+	public void assertCorrectSolution(){
+		addRule("poss(right(t), S) :- thymio(t),position(t,(X,Y),S), Y<1,Y>=0,X>=0,X<2");
+		addRule("poss(left(t), S) :- thymio(t),position(t,(X,Y),S), Y<2, Y>0, X>=0,X<2");
+		addRule("poss(down(t), S) :- thymio(t),position(t,(X,Y),S), Y<2, Y>=0, X<1,X>=0");
+		addRule("poss(up(t), S) :- thymio(t),position(t,(X,Y),S), Y<2, Y>=0, X<2, X>0");
+		
+		addRule("position(t,(X,Y),do(A,S)) :- (A=right(t),position(t,(X,Z),S),Y is (Z+1));(A=left(t),position(t,(X,Z),S),Y is (Z-1));(A=up(t),position(t,(Z,Y),S), X is (Z-1));(A=down(t),position(t,(Z,Y),S),X is (Z+1))");
 	}
 	
 	public void resetAll(){
@@ -77,30 +88,41 @@ public class JPLInterface {
 		return possQuery;
 	}
 	
-	public boolean checkMovement (String movement){
+	public boolean checkMovement (String movement, int newX, int newY){
 		currentMovementError = "";
 		
 		String possQuery = getPossQuery(movement);
-		System.out.println(possQuery);
+
 		boolean possible = false;
+		boolean positionIsCorrect = false;
+		
 		try {
 			Query q = new Query(possQuery);
 			possible = q.hasSolution();
 		} catch (Exception e){
 			//If poss is not even defined
 		}
-		if(!possible){
-			
+		if(!possible){		
 			currentMovementError = "FALSE";
 		}else{
+			
 			setNextSituation(movement);
+			positionIsCorrect = checkNewPosition(newX,newY);
+			
 			currentMovementError = "TRUE";
 		}
+		System.out.println(positionIsCorrect);
 		return possible;
 	}
 	
-	private boolean checkOnBlocked(int x, int y){
-		return false;
+	private boolean checkNewPosition(int posX, int posY){
+		Query q = new Query("position(t,(" + posX + "," + posY + ")," + currentSituation + ")");
+		System.out.println("position(t,(" + posX + "," + posY + ")," + currentSituation + ")");
+		if(q.hasSolution()){
+			return true;
+		}else{
+			return false;
+		}
 	}
 	
 	public void updateFacts(String text){
@@ -196,7 +218,6 @@ public class JPLInterface {
 	
 	private String buildAssertQuery(String clause){
 		String assertQuery = "assert((" + clause + "))";
-		System.out.println(assertQuery);
 		return assertQuery;
 	}
 	
