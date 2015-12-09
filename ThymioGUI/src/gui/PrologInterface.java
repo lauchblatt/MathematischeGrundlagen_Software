@@ -268,8 +268,9 @@ public class PrologInterface implements ActionListener {
 					arrowAnswer.setForeground(green);
 					prologMove = true;
 				}
-				arrowAnswer.setText(jpl.getCurrentMovementError());
 				
+				System.out.println(jpl.getCurrentMovementError());
+				arrowAnswer.setText(jpl.getCurrentMovementError());
 				
 				System.out.println("Ui-Move: " + uiMove);
 				System.out.println("Prolog-Move: " + prologMove);

@@ -27,8 +27,10 @@ public class JPLInterface {
 	
 	private String currentSituation;
 	private String nextSituation;
+	private String eol;
 	
 	public JPLInterface(){
+		eol = System.getProperty("line.separator");
 		facts = new ArrayList<String>();
 		rules = new ArrayList<String>();
 		currentRequestError = "";
@@ -103,24 +105,26 @@ public class JPLInterface {
 			//If poss is not even defined
 		}
 		if(!possible){		
-			currentMovementError = "FALSE";
+			currentMovementError = eol + "FALSE: " + possQuery + " kann nicht inferiert werden.";
 		}else{
-			
 			setNextSituation(movement);
+			currentMovementError = eol + "TRUE: " + possQuery + " kann inferiert werden.";
 			positionIsCorrect = checkNewPosition(newX,newY);
-			
-			currentMovementError = "TRUE";
 		}
-		System.out.println(positionIsCorrect);
-		return possible;
+
+		return (possible && positionIsCorrect);
 	}
 	
 	private boolean checkNewPosition(int posX, int posY){
+		String positionString = "position(t,(" + posX + "," + posY + ")," + currentSituation + ")";
 		Query q = new Query("position(t,(" + posX + "," + posY + ")," + currentSituation + ")");
-		System.out.println("position(t,(" + posX + "," + posY + ")," + currentSituation + ")");
+		
 		if(q.hasSolution()){
+			currentMovementError = currentMovementError + eol + "TRUE: " + positionString + " kann inferiert werden.";
+			System.out.println(currentMovementError);
 			return true;
 		}else{
+			currentMovementError = currentMovementError + eol + "FALSE: " + positionString + " kann nicht inferiert werden.";
 			return false;
 		}
 	}
