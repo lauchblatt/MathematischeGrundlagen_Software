@@ -419,8 +419,9 @@ public class PrologInterface implements ActionListener {
 						
 						for(int i = 0; i < solutions.length; i++){
 							Iterator it = solutions[i].entrySet().iterator();
-							answer = answer + "\n " + (i+1) + ". Lösung: ";
+							
 							while(it.hasNext()){
+								answer = answer + "\n " + (i+1) + ". Lösung: ";
 								Map.Entry pair = (Map.Entry)it.next();
 								answer = answer + pair.getKey() + " = " + pair.getValue() + " ";
 						        it.remove();			}
