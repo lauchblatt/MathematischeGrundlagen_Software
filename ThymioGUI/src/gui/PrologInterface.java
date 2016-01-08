@@ -36,8 +36,8 @@ import prolog.JPLInterface;
 
 public class PrologInterface implements ActionListener {
 
-	private static final int WINDOW_WIDTH = 1248;
-	private static final int WINDOW_HEIGHT = 800;
+	private static final int WINDOW_WIDTH = 1500;
+	private static final int WINDOW_HEIGHT = 1000;
 	private static final int[] CONTROL_BUTTON_DIMENSION = { 75, 75 };
 
 	private JFrame window;
@@ -110,7 +110,7 @@ public class PrologInterface implements ActionListener {
 	private void initWindow() {
 		jpl = new JPLInterface();
 		window = new JFrame();
-		window.setBounds(30, 30, WINDOW_WIDTH, WINDOW_HEIGHT);
+		window.setBounds(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
 		window.setTitle("Thymio / Prolog Interface - UniversitÃ¤t Regensburg");
 
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -133,11 +133,7 @@ public class PrologInterface implements ActionListener {
 		buttons = new JButton[xAxis][yAxis];
 		freeMap = new int[xAxis][yAxis];
 
-		Dimension d = getDimension();
-		windowPanel.setMinimumSize(d);
-		window.setMinimumSize(d);
-		windowPanel.setMaximumSize(d);
-		window.setMaximumSize(d);
+		window.setExtendedState(JFrame.MAXIMIZED_BOTH); 
 		window.setContentPane(windowPanel);
 		window.setLocation(loc);
 		initComponents();
@@ -196,12 +192,12 @@ public class PrologInterface implements ActionListener {
 		JLabel requestHint = new JLabel("Type in Requests:");
 		requestHint.setAlignmentX(Component.CENTER_ALIGNMENT);
 		requestField = new JTextField();
-		requestField.setMaximumSize(new Dimension(400, 35));
+		requestField.setMaximumSize(new Dimension(700, 35));
 		requestField.setAlignmentX(Component.CENTER_ALIGNMENT);
 		requestButton = new JButton("Send Request");
 		requestButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 		requestAnswer = new JTextPane();
-		requestAnswer.setMaximumSize(new Dimension(400, 200));
+		requestAnswer.setMaximumSize(new Dimension(700, 200));
 		requestAnswer.setAlignmentX(Component.CENTER_ALIGNMENT);
 		requestAnswer.setBackground(new Color(0xeeeeee));
 		
@@ -226,7 +222,7 @@ public class PrologInterface implements ActionListener {
 		JLabel requestAnswerHint = new JLabel("Status: ");
 		requestAnswerHint.setAlignmentX(Component.CENTER_ALIGNMENT);
 		arrowAnswer = new JTextPane();
-		arrowAnswer.setMaximumSize(new Dimension(400, 35));
+		arrowAnswer.setMaximumSize(new Dimension(700, 35));
 		arrowAnswer.setAlignmentX(Component.CENTER_ALIGNMENT);
 		arrowAnswer.setBackground(new Color(0xeeeeee));
 		requestAnswerPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -244,7 +240,7 @@ public class PrologInterface implements ActionListener {
 	
 	private void setListenerMovementButtons(){
 		
-		//Pfeiltasten werden gedrückt
+		//Pfeiltasten werden gedrï¿½ckt
 		
 		fwButton.addActionListener(new ActionListener(){
 			
@@ -428,7 +424,7 @@ public class PrologInterface implements ActionListener {
 							Iterator it = solutions[i].entrySet().iterator();
 							
 							while(it.hasNext()){
-								answer = answer + "\n " + (i+1) + ". Lösung: ";
+								answer = answer + "\n " + (i+1) + ". Lï¿½sung: ";
 								Map.Entry pair = (Map.Entry)it.next();
 								answer = answer + pair.getKey() + " = " + pair.getValue() + " ";
 						        it.remove();			}
@@ -529,7 +525,7 @@ public class PrologInterface implements ActionListener {
 		
 		if(newXPos < 0 || newXPos >= xAxis || newYPos < 0 || newYPos >= yAxis){
 			
-			uiErrorMessage = "UI-Fehler: \n Thymio darf sich nicht außerhalb des Feldes bewegen";
+			uiErrorMessage = "UI-Fehler: \n Thymio darf sich nicht auï¿½erhalb des Feldes bewegen";
 			return false;
 		}
 		
@@ -549,7 +545,7 @@ public class PrologInterface implements ActionListener {
 			}
 		}
 		
-		uiErrorMessage = "UI: Bewegung im UI möglich!";
+		uiErrorMessage = "UI: Bewegung im UI mï¿½glich!";
 		return true;
 		
 	}
