@@ -8,6 +8,7 @@ import org.jpl7.Atom;
 import org.jpl7.Query;
 import org.jpl7.Term;
 
+import parser.ClauseProcessor;
 import jpl.JPL;
 
 public class JPLInterface {
@@ -43,6 +44,11 @@ public class JPLInterface {
 		currentSituation = "s0";
 		resetAll();	
 		assertCorrectSolution();
+		
+		
+		ClauseProcessor cp = new ClauseProcessor();
+		cp.process("position(t,X,Y,S) AND thymio(t) AND Y<1 AND Y>=0 AND X>=0 AND X<2 -> poss(right(t),S).");
+		cp.process("A=right(t) AND position(t,X,Z,S) AND Y = (Z+1) -> position(t,X,Y,do(A,S)).");
 	}
 	
 	public void test(){

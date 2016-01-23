@@ -80,6 +80,46 @@ public interface HelloListener extends ParseTreeListener {
 	 */
 	void exitId_formula(HelloParser.Id_formulaContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link HelloParser#neg_formula}.
+	 * @param ctx the parse tree
+	 */
+	void enterNeg_formula(HelloParser.Neg_formulaContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link HelloParser#neg_formula}.
+	 * @param ctx the parse tree
+	 */
+	void exitNeg_formula(HelloParser.Neg_formulaContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link HelloParser#comp_formula}.
+	 * @param ctx the parse tree
+	 */
+	void enterComp_formula(HelloParser.Comp_formulaContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link HelloParser#comp_formula}.
+	 * @param ctx the parse tree
+	 */
+	void exitComp_formula(HelloParser.Comp_formulaContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link HelloParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void enterExpr(HelloParser.ExprContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link HelloParser#expr}.
+	 * @param ctx the parse tree
+	 */
+	void exitExpr(HelloParser.ExprContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link HelloParser#op}.
+	 * @param ctx the parse tree
+	 */
+	void enterOp(HelloParser.OpContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link HelloParser#op}.
+	 * @param ctx the parse tree
+	 */
+	void exitOp(HelloParser.OpContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link HelloParser#th_formula}.
 	 * @param ctx the parse tree
 	 */

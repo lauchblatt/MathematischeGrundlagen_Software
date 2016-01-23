@@ -10,7 +10,7 @@ public class ClauseProcessor {
 	public ClauseProcessor() {
 	}
 	
-	public String process(String input) {
+	public void process(String input) {
 		HelloParser parser=new HelloParser(new CommonTokenStream(new HelloLexer(new ANTLRInputStream(input))));
 
 		parser.setBuildParseTree(true);  
@@ -20,14 +20,22 @@ public class ClauseProcessor {
 		
 		walker.walk(listener,tree);
 		
-		//System.out.println(listener.getPrologClause());
+		System.out.println(listener.getPrologClause());
 		//System.out.println(Util.textToTerm(listener.getPrologClause()));
-		return listener.getPrologClause();
 	}
 	
 	public static void main(String [] args) {
 		ClauseProcessor cp = new ClauseProcessor();
 		
 		cp.process("A=test(X,S) & open(X,S) -> closed(X,do(A,S)).");		
+		cp.process("A=hi & open(X,Y) -> closed(X,Y).");		
+		cp.process("A=hi & !open(X,Y) -> closed(X,Y).");		
+		cp.process("X>=Y -> poss(right(T),S).");		
+		cp.process("X>=Y -> poss(right(T),S).");		
+		cp.process("X<=Y+1 -> poss(right(T),S).");		
+		cp.process("X<Y-5 & Z>=7 -> poss(right(T),S).");		
+		cp.process("!(X<Y-5) & Z>=7 -> poss(right(T),S).");		
+		cp.process("!(X<Y-5) & Z==X-7 -> poss(right(T),S).");		
+		cp.process("!(X==Y-5) & Z>=7 -> poss(right(T),S).");		
 	}
 }

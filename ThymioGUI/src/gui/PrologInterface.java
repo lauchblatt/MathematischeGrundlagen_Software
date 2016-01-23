@@ -144,8 +144,6 @@ public class PrologInterface implements ActionListener {
 		initEventListeners();
 		initTreeListener();
 		window.setVisible(true);
-		
-		
 
 	}
 
@@ -833,6 +831,8 @@ public class PrologInterface implements ActionListener {
 					thymioOnField = false;
 					goalOnField = false;
 				}
+				jpl.resetAll();
+				jpl.updateFacts(facts.getText());
 			}
 
 		});
