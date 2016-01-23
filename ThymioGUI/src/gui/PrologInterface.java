@@ -273,6 +273,7 @@ public class PrologInterface implements ActionListener {
 				System.out.println("Prolog-Move: " + prologMove);
 				
 				if(uiMove && prologMove){
+					jpl.setNewSituation();
 					JButton oldField = PrologInterface.this.getGridButton(thymioX, thymioY);
 					JButton nextField = PrologInterface.this.getGridButton(thymioX-1, thymioY);
 					oldField.setIcon(null);
@@ -314,6 +315,7 @@ public class PrologInterface implements ActionListener {
 				System.out.println("Prolog-Move: " + prologMove);
 				
 				if(uiMove && prologMove){
+					jpl.setNewSituation();
 					JButton oldField = PrologInterface.this.getGridButton(thymioX, thymioY);
 					JButton nextField = PrologInterface.this.getGridButton(thymioX+1, thymioY);
 					oldField.setIcon(null);
@@ -352,6 +354,7 @@ public class PrologInterface implements ActionListener {
 				System.out.println("Ui-Move: " + uiMove);
 				System.out.println("Prolog-Move: " + prologMove);
 				if(uiMove && prologMove){
+					jpl.setNewSituation();
 					JButton oldField = PrologInterface.this.getGridButton(thymioX, thymioY);
 					JButton nextField = PrologInterface.this.getGridButton(thymioX, thymioY-1);
 					oldField.setIcon(null);
@@ -390,6 +393,7 @@ public class PrologInterface implements ActionListener {
 				System.out.println("Ui-Move: " + uiMove);
 				System.out.println("Prolog-Move: " + prologMove);
 				if(uiMove && prologMove){
+					jpl.setNewSituation();
 					JButton oldField = PrologInterface.this.getGridButton(thymioX, thymioY);
 					JButton nextField = PrologInterface.this.getGridButton(thymioX, thymioY+1);
 					oldField.setIcon(null);

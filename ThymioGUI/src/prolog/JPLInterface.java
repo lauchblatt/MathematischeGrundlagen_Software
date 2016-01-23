@@ -44,11 +44,6 @@ public class JPLInterface {
 		currentSituation = "s0";
 		resetAll();	
 		assertCorrectSolution();
-		
-		
-		ClauseProcessor cp = new ClauseProcessor();
-		cp.process("position(t,X,Y,S) AND thymio(t) AND Y<1 AND Y>=0 AND X>=0 AND X<2 -> poss(right(t),S).");
-		cp.process("A=right(t) AND position(t,X,Z,S) AND Y = (Z+1) -> position(t,X,Y,do(A,S)).");
 	}
 	
 	public void test(){
@@ -122,12 +117,16 @@ public class JPLInterface {
 			
 			positionIsCorrect = checkNewPosition(newX, newY);
 			
-			if(positionIsCorrect){
-				currentSituation = nextSituation;
-			}
+			
 		}
 
 		return (possible && positionIsCorrect);
+	}
+	
+	public void setNewSituation(){
+
+			currentSituation = nextSituation;
+
 	}
 	
 	private boolean checkNewPosition(int posX, int posY){
