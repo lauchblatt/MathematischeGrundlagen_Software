@@ -10,7 +10,7 @@ public class ClauseProcessor {
 	public ClauseProcessor() {
 	}
 	
-	public void process(String input) {
+	public String process(String input) {
 		HelloParser parser=new HelloParser(new CommonTokenStream(new HelloLexer(new ANTLRInputStream(input))));
 
 		parser.setBuildParseTree(true);  
@@ -21,6 +21,7 @@ public class ClauseProcessor {
 		walker.walk(listener,tree);
 		
 		System.out.println(listener.getPrologClause());
+		return listener.getPrologClause();
 		//System.out.println(Util.textToTerm(listener.getPrologClause()));
 	}
 	
@@ -37,6 +38,6 @@ public class ClauseProcessor {
 		cp.process("!(X<Y-5) & Z>=7 -> poss(right(T),S).");		
 		cp.process("!(X<Y-5) & Z==X-7 -> poss(right(T),S).");		
 		cp.process("!(X==Y-5) & Z>=7 -> poss(right(T),S).");
-		cp.process("position(t,X,Y,S) -> poss(right(t),S).");
+		cp.process("A=right(t) AND position(t,X,Z,S) AND Y == Z+1 -> position(t,X,Y,do(A,S)).");
 	}
 }

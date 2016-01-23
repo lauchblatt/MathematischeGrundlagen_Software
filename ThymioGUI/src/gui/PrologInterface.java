@@ -743,7 +743,10 @@ public class PrologInterface implements ActionListener {
 						//System.out.println(cp.process(input.getText()));
 						
 						//Lets assume everything is prolog
-						jpl.addRule(input.getText());
+						ClauseProcessor cp = new ClauseProcessor();
+						String ruleInProlog = cp.process(input.getText());
+						ruleInProlog = ruleInProlog.substring(0, ruleInProlog.length()-1);
+						jpl.addRule(ruleInProlog);
 						jpl.test();
 						input.setText("");
 					}
