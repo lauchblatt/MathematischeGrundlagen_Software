@@ -59,12 +59,12 @@ public class JPLInterface {
 	
 	//Test Method that asserts the correct Solution in the Beginning
 	public void assertCorrectSolution(){
-		addRule("poss(right(t), S) :- thymio(t),position(t,(X,Y),S), Y<1,Y>=0,X>=0,X<2");
-		addRule("poss(left(t), S) :- thymio(t),position(t,(X,Y),S), Y<2, Y>0, X>=0,X<2");
-		addRule("poss(down(t), S) :- thymio(t),position(t,(X,Y),S), Y<2, Y>=0, X<1,X>=0");
-		addRule("poss(up(t), S) :- thymio(t),position(t,(X,Y),S), Y<2, Y>=0, X<2, X>0");
+		addRule("poss(right(t), S) :- thymio(t),position(t,X,Y,S), Y<1,Y>=0,X>=0,X<2");
+		addRule("poss(left(t), S) :- thymio(t),position(t,X,Y,S), Y<2, Y>0, X>=0,X<2");
+		addRule("poss(down(t), S) :- thymio(t),position(t,X,Y,S), Y<2, Y>=0, X<1,X>=0");
+		addRule("poss(up(t), S) :- thymio(t),position(t,X,Y,S), Y<2, Y>=0, X<2, X>0");
 		
-		addRule("position(t,(X,Y),do(A,S)) :- (A=right(t),position(t,(X,Z),S),Y is (Z+1));(A=left(t),position(t,(X,Z),S),Y is (Z-1));(A=up(t),position(t,(Z,Y),S), X is (Z-1));(A=down(t),position(t,(Z,Y),S),X is (Z+1))");
+		addRule("position(t,X,Y,do(A,S)) :- (A=right(t),position(t,X,Z,S),Y is (Z+1));(A=left(t),position(t,X,Z,S),Y is (Z-1));(A=up(t),position(t,Z,Y,S), X is (Z-1));(A=down(t),position(t,Z,Y,S),X is (Z+1))");
 	}
 	
 	public void resetAll(){
@@ -130,8 +130,8 @@ public class JPLInterface {
 	}
 	
 	private boolean checkNewPosition(int posX, int posY){
-		String positionString = "position(t,(" + posX + "," + posY + ")," + nextSituation + ")";
-		Query q = new Query("position(t,(" + posX + "," + posY + ")," + nextSituation + ")");
+		String positionString = "position(t," + posX + "," + posY + "," + nextSituation + ")";
+		Query q = new Query("position(t," + posX + "," + posY + "," + nextSituation + ")");
 		
 		System.out.println("positionString" + positionString);
 		if(q.hasSolution()){
@@ -144,7 +144,7 @@ public class JPLInterface {
 	}
 	
 	public void addToFluents(int posX, int posY){
-		String positionString = "position(t,(" + posX + "," + posY + ")," + currentSituation + ")";
+		String positionString = "position(t," + posX + "," + posY + "," + currentSituation + ")";
 		fluents.add(positionString);
 	}
 	

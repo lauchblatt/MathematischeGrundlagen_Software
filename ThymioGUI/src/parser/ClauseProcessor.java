@@ -36,6 +36,7 @@ public class ClauseProcessor {
 		cp.process("X<Y-5 & Z>=7 -> poss(right(T),S).");		
 		cp.process("!(X<Y-5) & Z>=7 -> poss(right(T),S).");		
 		cp.process("!(X<Y-5) & Z==X-7 -> poss(right(T),S).");		
-		cp.process("!(X==Y-5) & Z>=7 -> poss(right(T),S).");		
+		cp.process("!(X==Y-5) & Z>=7 -> poss(right(T),S).");
+		cp.process("position(t,X,Y,S) -> poss(right(t),S).");
 	}
 }

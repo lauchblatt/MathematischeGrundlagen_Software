@@ -476,8 +476,8 @@ public class PrologInterface implements ActionListener {
 		int count = 1;
 		for (int i = 0; i < xAxis; i++) {
 			for (int k = 0; k < yAxis; k++) {
-				positionsString += "position(f" + count + ",(" + i + "," + k
-						+ ")).\n";
+				positionsString += "position(f" + count + "," + i + "," + k
+						+ ").\n";
 				
 				freeMap[i][k] = count;
 				count++;
@@ -982,8 +982,8 @@ public class PrologInterface implements ActionListener {
 
 	protected void generateThymioFact(int i, int row, int col) {
 		if (i == 1) {
-			thymioString = "thymio(t)." + "\n" + "position(t,(" + row + "," + col
-					+ "),s0).\n";
+			thymioString = "thymio(t)." + "\n" + "position(t," + row + "," + col
+					+ ",s0).\n";
 		} else {
 			thymioString = "";
 		}
