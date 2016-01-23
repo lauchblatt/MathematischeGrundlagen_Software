@@ -731,23 +731,33 @@ public class PrologInterface implements ActionListener {
 			public void actionPerformed(ActionEvent e) {
 				if (e.getSource() == addRule) {
 					if (!input.getText().equals("")) {
-						DefaultMutableTreeNode root = (DefaultMutableTreeNode) model
-								.getRoot();
-						model.insertNodeInto(
-								new DefaultMutableTreeNode(input.getText()),
-								root, root.getChildCount());
-						model.reload(root);
+						try {
+							jpl.addRule(input.getText());
+							jpl.test();
+							
+							DefaultMutableTreeNode root = (DefaultMutableTreeNode) model
+									.getRoot();
+							model.insertNodeInto(
+									new DefaultMutableTreeNode(input.getText()),
+									root, root.getChildCount());
+							model.reload(root);
+						} catch (Exception exception){
+							exception.printStackTrace();
+						}
+						
 						
 						//Rules added here
 						//Parser Problems
 						//System.out.println(cp.process(input.getText()));
 						
-						//Lets assume everything is prolog
+						/*
 						ClauseProcessor cp = new ClauseProcessor();
 						String ruleInProlog = cp.process(input.getText());
 						ruleInProlog = ruleInProlog.substring(0, ruleInProlog.length()-1);
 						jpl.addRule(ruleInProlog);
-						jpl.test();
+						*/
+						
+						
 						input.setText("");
 					}
 				}
