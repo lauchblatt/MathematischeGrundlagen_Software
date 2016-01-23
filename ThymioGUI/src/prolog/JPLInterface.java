@@ -340,4 +340,8 @@ public class JPLInterface {
 	public void setCurrentMovementError(String currentMovementError) {
 		this.currentMovementError = currentMovementError;
 	}
+	
+	public ArrayList<String> getFluents() {
+		return fluents;
+	}
 }

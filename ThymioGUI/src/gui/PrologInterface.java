@@ -39,6 +39,8 @@ public class PrologInterface implements ActionListener {
 	private static final int WINDOW_WIDTH = 1248;
 	private static final int WINDOW_HEIGHT = 800;
 	private static final int[] CONTROL_BUTTON_DIMENSION = { 75, 75 };
+	
+	private String eol;
 
 	private JFrame window;
 	private JPanel windowPanel;
@@ -108,6 +110,7 @@ public class PrologInterface implements ActionListener {
 	}
 
 	private void initWindow() {
+		eol = System.getProperty("line.separator");
 		jpl = new JPLInterface();
 		window = new JFrame();
 		window.setBounds(30, 30, WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -283,7 +286,8 @@ public class PrologInterface implements ActionListener {
 					
 					jpl.addToFluents(thymioX-1, thymioY);
 					
-					thymioX = thymioX-1;		
+					thymioX = thymioX-1;
+					updateFluents();
 				}
 			}
 		});
@@ -323,6 +327,7 @@ public class PrologInterface implements ActionListener {
 					
 					jpl.addToFluents(thymioX+1, thymioY);
 					thymioX = thymioX+1;
+					updateFluents();
 				}
 			}
 		});
@@ -359,6 +364,7 @@ public class PrologInterface implements ActionListener {
 					nextField.setIcon(new ImageIcon("resources/thymio.png"));
 					jpl.addToFluents(thymioX, thymioY-1);
 					thymioY = thymioY-1;
+					updateFluents();
 				}
 			}
 		});
@@ -396,10 +402,18 @@ public class PrologInterface implements ActionListener {
 					nextField.setIcon(new ImageIcon("resources/thymio.png"));
 					jpl.addToFluents(thymioX, thymioY+1);
 					thymioY = thymioY+1;
+					updateFluents();
 				}
 			}
 		});
 		
+	}
+	
+	private void updateFluents(){
+		String currentFacts = facts.getText();
+		String newFluent = eol + jpl.getFluents().get(jpl.getFluents().size() - 1);
+		
+		facts.setText(currentFacts + newFluent);
 	}
 
 	private void setListenerForRequest() {
