@@ -13,6 +13,8 @@ import jpl.JPL;
 
 public class JPLInterface {
 	
+	private static final boolean ASSERT_CORRECT_SOLUTION = true;
+	
 	private ArrayList<String> facts;
 	private ArrayList<String> rules;
 	private String currentRequestError;
@@ -42,8 +44,11 @@ public class JPLInterface {
 		setCurrentMovementError("");
 		blocked = new ArrayList<int[]>();
 		currentSituation = "s0";
-		resetAll();	
-		assertCorrectSolution();
+		resetAll();
+		if(ASSERT_CORRECT_SOLUTION){
+			assertCorrectSolution();
+		}
+		
 	}
 	
 	public void test(){

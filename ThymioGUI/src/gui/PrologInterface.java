@@ -40,6 +40,8 @@ public class PrologInterface implements ActionListener {
 	private static final int WINDOW_HEIGHT = 1000;
 	private static final int[] CONTROL_BUTTON_DIMENSION = { 75, 75 };
 	
+	private static final boolean CP_USED = false;
+	
 	private String eol;
 
 	private JFrame window;
@@ -732,8 +734,15 @@ public class PrologInterface implements ActionListener {
 				if (e.getSource() == addRule) {
 					if (!input.getText().equals("")) {
 						try {
-							jpl.addRule(input.getText());
-							jpl.test();
+							if(CP_USED){
+								ClauseProcessor cp = new ClauseProcessor();
+								String ruleInProlog = cp.process(input.getText());
+								ruleInProlog = ruleInProlog.substring(0, ruleInProlog.length()-1);
+								jpl.addRule(ruleInProlog);
+							}else{
+								jpl.addRule(input.getText());
+								jpl.test();
+							}
 							
 							DefaultMutableTreeNode root = (DefaultMutableTreeNode) model
 									.getRoot();
@@ -751,10 +760,7 @@ public class PrologInterface implements ActionListener {
 						//System.out.println(cp.process(input.getText()));
 						
 						/*
-						ClauseProcessor cp = new ClauseProcessor();
-						String ruleInProlog = cp.process(input.getText());
-						ruleInProlog = ruleInProlog.substring(0, ruleInProlog.length()-1);
-						jpl.addRule(ruleInProlog);
+						
 						*/
 						
 						
