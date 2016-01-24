@@ -69,7 +69,12 @@ public class JPLInterface {
 		addRule("poss(down(t),S):-thymio(t), position(t,X,Y,S), Y<2, Y>=0, X<1,X>=0");
 		addRule("poss(up(t),S):-thymio(t), position(t,X,Y,S), Y<2, Y>=0, X<2, X>0");
 		
-		addRule("position(t,X,Y,do(A,S)) :- (A=right(t),position(t,X,Z,S),Y is Z+1);(A=left(t),position(t,X,Z,S),Y is Z-1);(A=up(t),position(t,Z,Y,S), X is Z-1);(A=down(t),position(t,Z,Y,S),X is Z+1)");
+		addRule("position(t,X,Y,do(A,S)) :- (A=right(t),position(t,X,Z,S),Y is Z+1)");
+		addRule("position(t,X,Y,do(A,S)) :- (A=left(t),position(t,X,Z,S),Y is Z-1)");
+		addRule("position(t,X,Y,do(A,S)) :- (A=up(t),position(t,Z,Y,S), X is Z-1)");
+		addRule("position(t,X,Y,do(A,S)) :- (A=down(t),position(t,Z,Y,S),X is Z+1)");
+		
+		//addRule("position(t,X,Y,do(A,S)) :- (A=right(t),position(t,X,Z,S),Y is Z+1);(A=left(t),position(t,X,Z,S),Y is Z-1);(A=up(t),position(t,Z,Y,S), X is Z-1);(A=down(t),position(t,Z,Y,S),X is Z+1)");
 	}
 	
 	public void resetAll(){
