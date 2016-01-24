@@ -13,7 +13,7 @@ import jpl.JPL;
 
 public class JPLInterface {
 	
-	private static final boolean ASSERT_CORRECT_SOLUTION = true;
+	private static final boolean ASSERT_CORRECT_SOLUTION = false;
 	
 	private ArrayList<String> facts;
 	private ArrayList<String> rules;
@@ -78,6 +78,7 @@ public class JPLInterface {
 		if(ASSERT_CORRECT_SOLUTION){
 			assertCorrectSolution();
 		}
+		addAllRules();
 	}
 	
 	public void resetFacts(){
@@ -186,7 +187,7 @@ public class JPLInterface {
 			String currentRule = rules.get(i);
 			retractClause(currentRule);
 		}
-		rules.clear();
+		//rules.clear();
 	}
 	
 	private void retractClause(String clause){
@@ -248,6 +249,12 @@ public class JPLInterface {
 		System.out.println("Rule " + rule);
 		System.out.println("ASSErt " + buildAssertQuery(rule));
 		new Query (buildAssertQuery(rule)).hasSolution();
+	}
+	
+	public void addAllRules(){
+		for(int i = 0; i < rules.size(); i++){
+			new Query (buildAssertQuery(rules.get(i))).hasSolution();
+		}
 	}
 	
 	private String buildAssertQuery(String clause){
