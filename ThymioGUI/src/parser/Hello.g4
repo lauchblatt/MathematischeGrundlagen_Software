@@ -25,7 +25,6 @@ TK_LE: '<';
 TK_PLUS: '+';
 TK_MINUS: '-';
 TK_NUM: [0-9]+;
-TK_IS: 'is'
 
 WS : [ \t\r\n]+ -> skip ; // skip spaces, tabs, newlines
 
