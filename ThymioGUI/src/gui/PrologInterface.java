@@ -116,7 +116,7 @@ public class PrologInterface implements ActionListener {
 		jpl = new JPLInterface();
 		window = new JFrame();
 		window.setBounds(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
-		window.setTitle("Thymio / Prolog Interface - Universität Regensburg");
+		window.setTitle("Thymio / Prolog Interface - Universit\u00E4t Regensburg");
 
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		windowPanel = new JPanel();
@@ -543,7 +543,7 @@ public class PrologInterface implements ActionListener {
 		
 		if(newXPos < 0 || newXPos >= xAxis || newYPos < 0 || newYPos >= yAxis){
 			
-			uiErrorMessage = "UI-Fehler: \n Thymio darf sich nicht au�erhalb des Feldes bewegen";
+			uiErrorMessage = "UI-Fehler: \n Thymio darf sich nicht au\u00DFerhalb des Feldes bewegen";
 			return false;
 		}
 		
@@ -563,7 +563,7 @@ public class PrologInterface implements ActionListener {
 			}
 		}
 		
-		uiErrorMessage = "UI: Bewegung im UI m�glich!";
+		uiErrorMessage = "UI: Bewegung im UI m\u00F6glich!";
 		return true;
 		
 	}
