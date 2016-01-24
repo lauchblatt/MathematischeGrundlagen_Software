@@ -73,7 +73,11 @@ public class JPLInterface {
 	}
 	
 	public void resetAll(){
+		currentSituation = "s0";
 		retractAll();
+		if(ASSERT_CORRECT_SOLUTION){
+			assertCorrectSolution();
+		}
 	}
 	
 	public void resetFacts(){

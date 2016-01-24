@@ -854,6 +854,10 @@ public class PrologInterface implements ActionListener {
 					thymioOnField = false;
 					goalOnField = false;
 				}
+				requestAnswer.setText("");
+				arrowAnswer.setText("");
+				mapAnswer.setText("");
+				
 				jpl.resetAll();
 				jpl.updateFacts(facts.getText());
 			}
