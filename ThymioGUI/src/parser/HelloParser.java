@@ -655,7 +655,7 @@ public class HelloParser extends Parser {
 				match(TK_LEQ);
 				setState(115);
 				((Comp_formulaContext)_localctx).expr = expr();
-				((Comp_formulaContext)_localctx).f =  (((Comp_formulaContext)_localctx).TK_VAR!=null?((Comp_formulaContext)_localctx).TK_VAR.getText():null) + "<=" + ((Comp_formulaContext)_localctx).expr.e; 
+				((Comp_formulaContext)_localctx).f =  (((Comp_formulaContext)_localctx).TK_VAR!=null?((Comp_formulaContext)_localctx).TK_VAR.getText():null) + "=<" + ((Comp_formulaContext)_localctx).expr.e; 
 				}
 				break;
 			case 4:
@@ -667,7 +667,7 @@ public class HelloParser extends Parser {
 				match(TK_LE);
 				setState(120);
 				((Comp_formulaContext)_localctx).expr = expr();
-				((Comp_formulaContext)_localctx).f =  (((Comp_formulaContext)_localctx).TK_VAR!=null?((Comp_formulaContext)_localctx).TK_VAR.getText():null) + "<=" + ((Comp_formulaContext)_localctx).expr.e; 
+				((Comp_formulaContext)_localctx).f =  (((Comp_formulaContext)_localctx).TK_VAR!=null?((Comp_formulaContext)_localctx).TK_VAR.getText():null) + "<" + ((Comp_formulaContext)_localctx).expr.e; 
 				}
 				break;
 			case 5:

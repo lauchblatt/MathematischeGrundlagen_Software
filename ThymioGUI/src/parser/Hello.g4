@@ -56,7 +56,7 @@ neg_formula returns [String f]:  TK_NEG th_formula {$f = "\\+" + $th_formula.f; 
 
 comp_formula returns [String f]: TK_VAR TK_GEQ expr {$f = $TK_VAR.text + ">=" + $expr.e; } |
 								 TK_VAR TK_GE expr {$f = $TK_VAR.text + ">" + $expr.e; } |
-								 TK_VAR TK_LEQ expr {$f = $TK_VAR.text + "<=" + $expr.e; } |
+								 TK_VAR TK_LEQ expr {$f = $TK_VAR.text + "=<" + $expr.e; } |
 								 TK_VAR TK_LE expr {$f = $TK_VAR.text + "<" + $expr.e; } |
 								 TK_VAR TK_NUM_EQUAL expr {$f = $TK_VAR.text + " is " + $expr.e; };
 								 

@@ -13,28 +13,42 @@ import jpl.JPL;
 
 public class JPLInterface {
 	
+	//True setzen wenn zu Beginn die korrekte Lösung angenommen werden soll
 	private static final boolean ASSERT_CORRECT_SOLUTION = false;
 	
+	//Interne Listen zur Verwaltung der Regeln, Fakten und Fluenten
 	private ArrayList<String> facts;
 	private ArrayList<String> rules;
+	private ArrayList<String> fluents;
+	
+	//Felder um für alle Fehlerarten, korrekte Fehlermeldungen zu formulieren
 	private String currentRequestError;
 	private String currentMovementError;
+	
+	//Felder um dynamisch anzupassen ob Bewegung in Prolog und im UI möglich ist
 	private boolean currentMovementPossibleProlog;
 	private boolean currentMovementPossibleUi;
 	
+	//Länge der Felder
 	private int fieldLengthX;
 	private int fieldLengthY;
+	
+	//Position des Thymios
 	private int thymioX;
 	private int thymioY;
+	
+	//Blockierte Felder als Tupel aus zwei Koordinaten
 	private ArrayList<int[]> blocked;
 	
+	//Aktuelle und nächste Situation mit Situationskalkül sichern z.B. s0 oder do(right(t),s0)
 	private String currentSituation;
 	private String nextSituation;
+	//Line-Seperator zur Verschönerung der Meldungen
 	private String eol;
 	
-	private ArrayList<String> fluents;
 	
 	public JPLInterface(){
+		//Line-Seperatur auf System-Basis holen, zur Verschönerung der textuellen Meldungen
 		eol = System.getProperty("line.separator");
 		
 		fluents = new ArrayList<String>();
@@ -43,6 +57,7 @@ public class JPLInterface {
 		currentRequestError = "";
 		setCurrentMovementError("");
 		blocked = new ArrayList<int[]>();
+		//Erste Situation ist s0
 		currentSituation = "s0";
 		resetAll();
 		if(ASSERT_CORRECT_SOLUTION){
@@ -51,6 +66,7 @@ public class JPLInterface {
 		
 	}
 	
+	//Testmetode um Fakten und Regeln auszugeben
 	public void test(){
 		System.out.println("############ TEST");
 		for(int i = 0; i < facts.size(); i++){
@@ -62,7 +78,7 @@ public class JPLInterface {
 		System.out.println("Situation " + currentSituation);
 	}
 	
-	//Test Method that asserts the correct Solution in the Beginning
+	//Testmethode, die die korrekte Lösung am Anfang angibt, !!! Koordinatensystem basiert auf Java-Grafiken
 	public void assertCorrectSolution(){
 		addRule("poss(right(t),S):-thymio(t), position(t,X,Y,S), Y<1,Y>=0,X>=0,X<2");
 		addRule("poss(left(t),S):-thymio(t), position(t,X,Y,S), Y<2, Y>0, X>=0,X<2");
@@ -77,12 +93,15 @@ public class JPLInterface {
 		//addRule("position(t,X,Y,do(A,S)) :- (A=right(t),position(t,X,Z,S),Y is Z+1);(A=left(t),position(t,X,Z,S),Y is Z-1);(A=up(t),position(t,Z,Y,S), X is Z-1);(A=down(t),position(t,Z,Y,S),X is Z+1)");
 	}
 	
+	//Methode um Zustand zu reseten auf s0, wird gleich bei der Initialisierung aufgerufen
 	public void resetAll(){
 		currentSituation = "s0";
+		//Alle Fakten und Regeln zurückziehen
 		retractAll();
 		if(ASSERT_CORRECT_SOLUTION){
 			assertCorrectSolution();
 		}
+		//Regeln die über das UI bereits eingegeben wurden, werden erneut hinzugefügt
 		addAllRules();
 	}
 	
@@ -99,42 +118,54 @@ public class JPLInterface {
 		rules.remove(index);
 	}
 	
+	//Methode um die nächste Situation zu setzen über die neue Aktion und den bisherigen Zustand
 	private void setNextSituation (String movement){
 
 		nextSituation = "do(" + movement + "(t)," + currentSituation + ")";
 		
 	}
 	
+	//Methode um den poss-Fakt für die nächste Situation abzufragen, erhält die aktuelle Akion
 	private String getPossQuery (String movement){
 		String possQuery = "poss(" + movement + "(t)," + currentSituation + ")";
 		return possQuery;
 	}
 	
+	//Methode um zu prüfen ob die Aktion gemäß Prolog-Logik möglich ist
 	public boolean checkMovement (String movement, int newX, int newY){
 		currentMovementError = "";
 		
+		//Aktuelle poss-Abfrage bilden
 		String possQuery = getPossQuery(movement);
-
+		
+		//poss-Klausel für nächste Situation wird abgefragt
 		boolean possible = false;
+		//position-Klausel für nächste Situation wird abgefragt
 		boolean positionIsCorrect = false;
 		
 		try {
 			Query q = new Query(possQuery);
+			//Abfrage ob Bewegung gemäß Prolog möglich ist, über Abfrage der poss-Query
 			possible = q.hasSolution();
 		} catch (Exception e){
 			//If poss is not even defined
 		}
-		if(!possible){		
+		if(!possible){	
+			//Wenn möglich --> negatives Feedback
 			currentMovementError = eol + "FALSE: " + possQuery + " kann nicht inferiert werden.";
 		}else{
+			//Wenn nicht möglich, positives Feedback
 			currentMovementError = eol + "TRUE: " + possQuery + " kann inferiert werden.";
+			//Situation wird hochgezählt
 			setNextSituation(movement);
 			
+			//Abprüfen ob neue Position als Fluent auch gefolgert werden kann
 			positionIsCorrect = checkNewPosition(newX, newY);
 			
 			
 		}
-
+		
+		//return nur true, wenn sowohl poss-Klausel als auch position-Fluent true sind
 		return (possible && positionIsCorrect);
 	}
 	
@@ -144,28 +175,36 @@ public class JPLInterface {
 
 	}
 	
+	//Methode um abzuprüfen ob position-Fakt auch gefolgert werden kann z.B. position(t, 0, 1, s0)
 	private boolean checkNewPosition(int posX, int posY){
+		
+		// Query zur Abfrage bilden
 		String positionString = "position(t," + posX + "," + posY + "," + nextSituation + ")";
 		Query q = new Query("position(t," + posX + "," + posY + "," + nextSituation + ")");
 		
 		System.out.println("positionString" + positionString);
 		if(q.hasSolution()){
+			//Wenn Abfrage korrekt --> positives Feedbackk
 			currentMovementError = currentMovementError + eol + "TRUE: " + positionString + " kann inferiert werden.";
 			return true;
 		}else{
+			//Wenn Abfrage nicht möglich --> negatives Feedback
 			currentMovementError = currentMovementError + eol + "FALSE: " + positionString + " kann nicht inferiert werden.";
 			return false;
 		}
 	}
 	
+	//Methode um Fakten zu Fluenten hinzuzufügen
 	public void addToFluents(int posX, int posY){
 		String positionString = "position(t," + posX + "," + posY + "," + currentSituation + ")";
 		fluents.add(positionString);
 	}
 	
+	//Methode um Text aus dem UI in Prolog Fakten umzuwandeln
 	public void updateFacts(String text){
 		resetFacts();
 		
+		//Text wird auf Basis von .\n gesetzt
 		String[] facts = text.split("\\.\n");
 		
 		for(int i = 0; i < facts.length; i++){
@@ -173,6 +212,10 @@ public class JPLInterface {
 		}
 		
 	}
+	
+	/* 
+	 * Hilfsmethoden um Fakten,Regeln aus der Prolog-Logik zu entfernen
+	 */
 	
 	private void retractAll(){
 		retractAllFacts();
@@ -205,6 +248,11 @@ public class JPLInterface {
 		return retractQuery;
 	}
 	
+	/*
+	 * Hilfsmethoden zur Interaktion mit Prolog
+	 */
+	
+	//Methode um generelle Anfragen an Prolog zu stellen und alle Lösungen zurückzubekommen
 	public Map<String, Term>[] request(String request){
 		Query q = new Query(request);
 		Map<String, Term>[] solutions = q.allSolutions(request);
@@ -212,13 +260,16 @@ public class JPLInterface {
 		return solutions;
 	}
 	
+	//Methode um generelle Anfragen an Prolog zu stellen, gibt nur true oder false zurück, oder den Fehler
 	public boolean queryClause(String fact){
 		try{
 			Query q = new Query(fact);
 			if(q.hasSolution()){
+				//Keine Requestfehler-Text wird gesetzt, wenn Lösung aus Prolog zu folgern ist
 				currentRequestError = "";
 				return true;
 			}else{
+				//Keine Requestfehler-Text wird gesetzt, wenn Lösung aus Prolog zu folgern ist
 				currentRequestError = "";
 				return false;
 			}
@@ -228,6 +279,7 @@ public class JPLInterface {
 		}
 	}
 	
+	//Methode um Prolog-Ausgabe-Fehler anzupassen und auszugeben, bei generellen Anfragen
 	private String getErrorType(Exception e){
 		String message = e.getMessage();
 		int pos1 = ordinalIndexOf(message, '(', 0);
@@ -237,6 +289,7 @@ public class JPLInterface {
 		return message;
 	}
 	
+	//Hilfsmethode um obige Fehlerausgabe anzupassen
 	private int ordinalIndexOf(String str, char c, int n) {
 	    int pos = str.indexOf(c, 0);
 	    while (n-- > 0 && pos != -1)
@@ -244,11 +297,17 @@ public class JPLInterface {
 	    return pos;
 	}
 	
+	/*
+	 * Methoden um Fakten und Regeln der Prolog-Logik hinzuzufügen
+	 */
+	
+	//Fakt wird Prolog-Logik und eigener Fakten-Liste hinzugefügt
 	public void addFact(String clause){
 		facts.add(clause);
 		new Query (buildAssertQuery(clause)).hasSolution();
 	}
 	
+	//Regel wird Prolog-Logik und eigener Regel-Liste hinzugefügt
 	public void addRule(String rule){
 		rules.add(rule);
 		System.out.println("Rule " + rule);
@@ -262,11 +321,15 @@ public class JPLInterface {
 		}
 	}
 	
+	//Hilfsmethode um assert-Query für Prolog-Logik zu bilden
 	private String buildAssertQuery(String clause){
 		String assertQuery = "assert((" + clause + "))";
 		return assertQuery;
 	}
 	
+	/*
+	 * Setter- und Getter-Methoden
+	 */
 	public ArrayList<String> getFacts(){
 		return facts;
 	}

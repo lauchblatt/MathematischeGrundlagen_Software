@@ -40,7 +40,8 @@ public class PrologInterface implements ActionListener {
 	private static final int WINDOW_HEIGHT = 1000;
 	private static final int[] CONTROL_BUTTON_DIMENSION = { 75, 75 };
 	
-	private static final boolean CP_USED = false;
+	//Konstante um festzulegen ob der Clause-Processor genutzt werden soll
+	private static final boolean CP_USED = true;
 	
 	private String eol;
 
@@ -98,6 +99,7 @@ public class PrologInterface implements ActionListener {
 
 	private JButton removeRule;
 	
+	//Objekte zur Prologinteraktion
 	private JPLInterface jpl;
 	private ClauseProcessor cp;
 	
@@ -245,17 +247,23 @@ public class PrologInterface implements ActionListener {
 		
 		//Pfeiltasten werden gedrï¿½ckt
 		
+		/*
+		 * Für alle 4 Bewegungen ähnlich, Kommentare nur bei forward-button
+		 */
 		fwButton.addActionListener(new ActionListener(){
 			
-			
+			//Methode um abzuprüfen ob Aktion möglich ist, gemäß UI und Prolog-Logik
 			public void actionPerformed(ActionEvent e) {
+				//Farben werden je nachdem gesetzt ob Bewegung möglich oder nicht
 				Color green = new Color(0, 255, 0);
 				Color red = new Color(255, 0, 0);
+				//Boolesche Variablen für Möglichkeit im UI und in Prolog-Logik sich zu bewegen
 				boolean uiMove = false;
 				boolean prologMove = false;
 				
 				mapAnswer.setForeground(red);
 				
+				//Bewegung in UI testen
 				if(testMovementInUI(-1,0)){
 					mapAnswer.setForeground(green);
 					uiMove = true;
@@ -263,6 +271,8 @@ public class PrologInterface implements ActionListener {
 				mapAnswer.setText(uiErrorMessage);
 				
 				arrowAnswer.setForeground(red);
+				
+				//Bewegung in Prolog testen
 				if(jpl.checkMovement("up", thymioX-1,thymioY)){
 					arrowAnswer.setForeground(green);
 					prologMove = true;
@@ -274,6 +284,7 @@ public class PrologInterface implements ActionListener {
 				System.out.println("Ui-Move: " + uiMove);
 				System.out.println("Prolog-Move: " + prologMove);
 				
+				//Wenn Bewegung in beiden Fällen möglich UI und Prolog-Interface updaten
 				if(uiMove && prologMove){
 					jpl.setNewSituation();
 					JButton oldField = PrologInterface.this.getGridButton(thymioX, thymioY);
@@ -281,9 +292,11 @@ public class PrologInterface implements ActionListener {
 					oldField.setIcon(null);
 					nextField.setIcon(new ImageIcon("resources/thymio.png"));
 					
+					//Gefolgerten position-Fakt den Fluenten hinzufügen...
 					jpl.addToFluents(thymioX-1, thymioY);
-					
+					//... position updaten...
 					thymioX = thymioX-1;
+					//...Fluenten im UI updaten
 					updateFluents();
 				}
 			}
@@ -409,6 +422,7 @@ public class PrologInterface implements ActionListener {
 		
 	}
 	
+	//Methode um Fluenten im UI an Faktenliste anzuhängen
 	private void updateFluents(){
 		String currentFacts = facts.getText();
 		String newFluent = eol + jpl.getFluents().get(jpl.getFluents().size() - 1);
@@ -417,32 +431,33 @@ public class PrologInterface implements ActionListener {
 	}
 
 	private void setListenerForRequest() {
+		//Aktion für den allgemeinen Request-Button setzen
 		requestButton.addActionListener(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				//Wenn nichts im Request-Feld ist, Prompt ausgeben
 				if(requestField.getText().equals("")){
 					requestAnswer.setText("Type in Request...");
 				} else{
-					// Send Requests to Prolog
-					// Falschangaben abfangen?
-					// Ask if Solution exists...
+					// Anfrage wird an Prolog-Interface gesendet, gespeichert ob Lösung möglich ist
 					boolean hasSolution = jpl.queryClause(requestField.getText());
 					if(hasSolution){
-						
+						//Wenn Anfrage lösbar, Ausgabe auf true setzen
 						String answer = "TRUE";
 						
 						Color green = new Color(0, 255, 0);
 						requestAnswer.setForeground(green);
 						
-						// ... if yes ask for all solutions
+						// ... alle möglichen Lösungen ausgeben, wenn es mehrere gibt
 						Map<String, Term>[] solutions = jpl.request(requestField.getText());
 						
 						for(int i = 0; i < solutions.length; i++){
 							Iterator it = solutions[i].entrySet().iterator();
 							
 							while(it.hasNext()){
-								answer = answer + "\n " + (i+1) + ". Lï¿½sung: ";
+								//Ausgabe textuell formatieren
+								answer = answer + "\n " + (i+1) + ". L\u00F6sung: ";
 								Map.Entry pair = (Map.Entry)it.next();
 								answer = answer + pair.getKey() + " = " + pair.getValue() + " ";
 						        it.remove();			}
@@ -451,6 +466,7 @@ public class PrologInterface implements ActionListener {
 						requestAnswer.setText(answer);
 						
 					}else{
+						//Wenn angefragter Fakt nicht lösbar über Prolog-Interface, entsprechende Ausgabe angeben
 						Color red = new Color(255, 0, 0);
 						requestAnswer.setForeground(red);
 						requestAnswer.setText("FALSE -->" + jpl.getCurrentRequestError());
@@ -517,6 +533,7 @@ public class PrologInterface implements ActionListener {
 		facts.setText(fieldsString + positionsString + freeString
 				//+ blockedString 
 				+ thymioString + goalString + obstacleString);
+		//Fakten bei update im Prolog-Interface neu setzen
 		jpl.updateFacts(facts.getText());
 		
 	}
@@ -529,8 +546,10 @@ public class PrologInterface implements ActionListener {
 		blocked.clear();
 	}
 	
+	//Methode um zu testen ob momentane Aktion in UI möglich ist, neue x, y - Koordinaten werden dafür übergeben
 	private boolean testMovementInUI(int xMove, int yMove){
 		
+		//Fehlernachricht für UI-Infos wird gemäß Möglichkeiten angegeben
 		uiErrorMessage = "";
 		
 		int newXPos = thymioX + xMove;
@@ -734,6 +753,7 @@ public class PrologInterface implements ActionListener {
 				if (e.getSource() == addRule) {
 					if (!input.getText().equals("")) {
 						try {
+							//Regeln der Prolog-Logik hinzufügen und Klausel-Prozessor diesbezüglich nutzen
 							if(CP_USED){
 								ClauseProcessor cp = new ClauseProcessor();
 								String ruleInProlog = cp.process(input.getText());
@@ -858,6 +878,7 @@ public class PrologInterface implements ActionListener {
 				arrowAnswer.setText("");
 				mapAnswer.setText("");
 				
+				//Alles im Prolog-Interface zurückstellen und neu starten
 				jpl.resetAll();
 				jpl.updateFacts(facts.getText());
 			}
